@@ -18,9 +18,7 @@
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/white"
-            android:padding="4dp"
-            android:src="@drawable/ic_vector_back" />
+            android:src="@drawable/ic_arrow_back_24" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -72,9 +70,7 @@
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_gravity="end|center_vertical"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="3dp"
-            android:src="@drawable/ic_vector_share" />
+            android:src="@drawable/ic_share_24" />
 
     </FrameLayout>
 
@@ -96,9 +92,7 @@
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_gravity="end|center_vertical"
-            android:paddingHorizontal="2dp"
-            android:paddingVertical="3dp"
-            android:src="@drawable/ic_vector_support" />
+            android:src="@drawable/ic_support_24" />
 
     </FrameLayout>
 
@@ -120,9 +114,7 @@
             android:layout_width="@dimen/ic_size"
             android:layout_height="@dimen/ic_size"
             android:layout_gravity="end|center_vertical"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="5dp"
-            android:src="@drawable/ic_vector_forward" />
+            android:src="@drawable/ic_arrow_forward_24" />
 
     </FrameLayout>
 

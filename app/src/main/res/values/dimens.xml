@@ -4,6 +4,7 @@
     <dimen name="basic_text_size">22sp</dimen>
     <dimen name="button_margin">16dp</dimen>
     <dimen name="button_radius">16dp</dimen>
+    <dimen name="main_ic_padding">8dp</dimen>
 
     <dimen name="ic_size">24dp</dimen>
     <dimen name="settings_text_size">16sp</dimen>

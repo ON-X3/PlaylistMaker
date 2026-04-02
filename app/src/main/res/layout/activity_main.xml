@@ -29,9 +29,9 @@
         android:textColor="@color/text_black"
         android:textSize="@dimen/basic_text_size"
         app:cornerRadius="@dimen/button_radius"
-        app:icon="@drawable/ic_vector_search"
+        app:icon="@drawable/ic_search_24"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/main_ic_padding"
         app:iconTint="@color/text_black" />
 
     <com.google.android.material.button.MaterialButton
@@ -48,9 +48,9 @@
         android:textColor="@color/text_black"
         android:textSize="@dimen/basic_text_size"
         app:cornerRadius="@dimen/button_radius"
-        app:icon="@drawable/ic_vector_library"
+        app:icon="@drawable/ic_library_24"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/main_ic_padding"
         app:iconTint="@color/text_black" />
 
     <com.google.android.material.button.MaterialButton
@@ -68,9 +68,9 @@
         android:textColor="@color/text_black"
         android:textSize="@dimen/basic_text_size"
         app:cornerRadius="@dimen/button_radius"
-        app:icon="@drawable/ic_vector_settings"
+        app:icon="@drawable/ic_settings_24"
         app:iconGravity="textStart"
-        app:iconPadding="10dp"
+        app:iconPadding="@dimen/main_ic_padding"
         app:iconTint="@color/text_black" />
 
 
