@@ -22,37 +22,40 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">@dimen/basic_text_size</item>
         <item name="android:letterSpacing">0</item>
+        <item name="android:layout_marginHorizontal">@dimen/basic_padding</item>
     </style>
 
     <style name="SettingsListStyle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="android:paddingVertical">@dimen/settings_text_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/settings_list_height</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/settings_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
-    </style>
-
-    <style name="SettingsIconStyle">
-        <item name="android:layout_width">@dimen/ic_size</item>
-        <item name="android:layout_height">@dimen/ic_size</item>
-        <item name="android:layout_gravity">end|center_vertical</item>
-        <item name="tint">@color/yp_text_gray</item>
+        <item name="drawableTint">@color/yp_text_gray</item>
+        <item name="android:paddingStart">@dimen/basic_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_right_padding</item>
     </style>
 
     <style name="TitleStyle">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textSize">@dimen/basic_text_size</item>
         <item name="android:letterSpacing">0</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">24dp</item>
-        <item name="android:layout_marginTop">14dp</item>
     </style>
 
-    <style name="MainTitleStyle" parent="TitleStyle">
-        <item name="android:layout_marginStart">0dp</item>
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/toolabr_height</item>
+        <item name="contentInsetStart">@dimen/basic_padding</item>
+        <item name="contentInsetStartWithNavigation">64dp</item>
+        <item name="titleTextAppearance">@style/TitleStyle</item>
+    </style>
+
+    <style name="MainToolbarStyle" parent="ToolbarStyle">
+        <item name="android:background">@color/blue</item>
+        <item name="titleTextColor">@color/white</item>
     </style>
 
     <style name="BackButton">
@@ -66,6 +69,7 @@
     <style name="SearchBoxStyle">
         <item name="android:backgroundTint">@color/yp_light_gray</item>
         <item name="android:textColorHint">@color/yp_text_gray</item>
+        <item name="android:drawableTint">@color/yp_text_gray</item>
     </style>
 
     <style name="SearchBoxIconStyle">

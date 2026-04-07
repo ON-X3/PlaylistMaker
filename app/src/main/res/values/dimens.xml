@@ -8,8 +8,9 @@
 
     <dimen name="ic_size">24dp</dimen>
     <dimen name="settings_text_size">16sp</dimen>
-    <dimen name="settings_text_padding">21dp</dimen>
+    <dimen name="settings_list_height">61dp</dimen>
     <dimen name="settings_right_padding">12dp</dimen>
+    <dimen name="toolabr_height">56dp</dimen>
 
     <dimen name="small_ic_size">16dp</dimen>
 </resources>

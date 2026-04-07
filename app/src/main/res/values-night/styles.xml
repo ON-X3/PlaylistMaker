@@ -5,28 +5,31 @@
     </style>
 
     <style name="SettingsListStyle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="android:paddingVertical">@dimen/settings_text_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/settings_list_height</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:textSize">@dimen/settings_text_size</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="drawableTint">?attr/colorOnPrimary</item>
+        <item name="android:paddingStart">@dimen/basic_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_right_padding</item>
     </style>
 
-    <style name="SettingsIconStyle">
-        <item name="android:layout_width">@dimen/ic_size</item>
-        <item name="android:layout_height">@dimen/ic_size</item>
-        <item name="android:layout_gravity">end|center_vertical</item>
-        <item name="tint">?attr/colorOnPrimary</item>
+    <style name="MainToolbarStyle" parent="ToolbarStyle">
+        <item name="android:background">@color/yp_black</item>
+        <item name="titleTextColor">@color/white</item>
     </style>
 
     <style name="SearchBoxStyle">
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:textColorHint">@color/yp_black</item>
+        <item name="android:drawableTint">@color/yp_black</item>
     </style>
 
     <style name="SearchBoxIconStyle">
         <item name="tint">@color/yp_black</item>
     </style>
+
 </resources>

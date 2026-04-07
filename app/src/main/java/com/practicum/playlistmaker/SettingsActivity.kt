@@ -9,18 +9,28 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val buttonBack = findViewById<ImageView>(R.id.back_from_settings)
-        buttonBack.setOnClickListener {
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
+            insets
+        }
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar.setNavigationOnClickListener {
             finish()
         }
 
-        val buttonShare = findViewById<FrameLayout>(R.id.share_button)
+        val buttonShare = findViewById<MaterialTextView>(R.id.share_button)
         buttonShare.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.setType("text/plain")
@@ -28,7 +38,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(shareIntent)
         }
 
-        val buttonSupport = findViewById<FrameLayout>(R.id.support_button)
+        val buttonSupport = findViewById<MaterialTextView>(R.id.support_button)
         buttonSupport.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SENDTO)
             supportIntent.data = Uri.parse("mailto:")
@@ -38,7 +48,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        val buttonAgreement = findViewById<FrameLayout>(R.id.agreement_button)
+        val buttonAgreement = findViewById<MaterialTextView>(R.id.agreement_button)
         buttonAgreement.setOnClickListener {
             val agreementIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.agreement_url)))
             startActivity(agreementIntent)

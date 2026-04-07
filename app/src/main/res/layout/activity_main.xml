@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/basic_padding"
+    android:theme="@style/MainActivity.Theme"
     style="@style/MainActivityStyle">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="@string/app_name_wo_uc"
-        android:textColor="?attr/colorOnSecondary"
-        android:background="@android:color/transparent"
-        style="@style/MainTitleStyle" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/MainToolbarStyle"
+        app:title="@string/app_name_wo_uc"
+        app:titleTextAppearance="@style/TitleStyle" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:text="@string/search"
         app:icon="@drawable/ic_search_24"
         style="@style/MainButtonStyle" />

@@ -10,4 +10,8 @@
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="tint">?attr/colorOnPrimary</item>
     </style>
+
+    <style name="MainActivity.Theme" parent="Base.Theme.PlaylistMaker">
+        <item name="colorPrimary">@color/blue</item>
+    </style>
 </resources>
