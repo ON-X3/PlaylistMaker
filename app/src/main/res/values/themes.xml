@@ -2,8 +2,16 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorSecondary">@color/blue</item>
+        <item name="colorOnPrimary">@color/yp_black</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="tint">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
+    <style name="MainActivity.Theme" parent="Base.Theme.PlaylistMaker">
+        <item name="colorPrimary">@color/blue</item>
+    </style>
 </resources>
