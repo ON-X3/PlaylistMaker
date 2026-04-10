@@ -13,4 +13,6 @@
     <dimen name="toolabr_height">56dp</dimen>
 
     <dimen name="small_ic_size">16dp</dimen>
+    <dimen name="info_text_size">11sp</dimen>
+    <dimen name="small_padding">8dp</dimen>
 </resources>
