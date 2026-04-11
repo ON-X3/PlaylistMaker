@@ -32,4 +32,12 @@
         <item name="tint">@color/yp_black</item>
     </style>
 
+    <style name="InfoTextStyle">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/info_text_size</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="tint">@color/white</item>
+        <item name="drawableTint">@color/white</item>
+    </style>
+
 </resources>
