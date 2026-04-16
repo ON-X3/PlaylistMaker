@@ -4,22 +4,61 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getString
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 class SearchActivity : AppCompatActivity() {
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://itunes.apple.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val tunesApiService = retrofit.create<TunesApiService>()
+
+    private val tracks: MutableList<Track> = mutableListOf()
+    private val adapter = TrackAdapter(tracks)
+
+    private lateinit var searchPlaceholder: LinearLayout
+    private lateinit var searchPlaceholderImage: ImageView
+    private lateinit var searchPlaceholderText: TextView
+    private lateinit var updateButton: MaterialButton
+    private lateinit var searchEditText: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        searchEditText = findViewById(R.id.searchEditText)
+        searchPlaceholder = findViewById(R.id.search_placeholder)
+        searchPlaceholderImage = findViewById(R.id.search_placeholder_image)
+        searchPlaceholderText = findViewById(R.id.search_placeholder_text)
+        updateButton = findViewById(R.id.update_button)
+
+        updateButton.setOnClickListener {
+            sendQuery()
+        }
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -33,13 +72,18 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        val searchEditText = findViewById<EditText>(R.id.searchEditText)
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+
         val clearButton = findViewById<ImageView>(R.id.clear_button)
         clearButton.setOnClickListener {
             searchEditText.setText("")
             inputMethodManager?.hideSoftInputFromWindow(searchEditText.windowToken, 0)
+            tracks.clear()
+            adapter.notifyDataSetChanged()
         }
+
+
 
         val searchTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -53,34 +97,19 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
             }
         }
-
         searchEditText.addTextChangedListener(searchTextWatcher)
         searchEditText.requestFocus()
 
-        val trackList = listOf(
-            Track("Smells Like Teen Spirit",
-                "Nirvana",
-                "5:01",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
-            Track("Billie Jean",
-                "Michael Jackson",
-                "4:35",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
-            Track("Stayin' Alive",
-                "Bee Gees",
-                "4:10",
-                "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
-            Track("Whole Lotta Love",
-                "Led Zeppelin",
-                "5:33",
-                "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"),
-            Track("Sweet Child O'Mine",
-                "Sweet Child O'Mine",
-                "5:03",
-                "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"))
-
         val trackRecycler = findViewById<RecyclerView>(R.id.tracksList)
-        trackRecycler.adapter = TrackAdapter (trackList)
+        trackRecycler.adapter = adapter
+
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                sendQuery()
+                true
+            }
+            false
+        }
 
     }
 
@@ -99,8 +128,61 @@ class SearchActivity : AppCompatActivity() {
         searchEditText.setSelection(searchEditText.text.length)
     }
 
+    private fun showPlaceholder(text: String) {
+        if (text.isNotEmpty()) {
+            tracks.clear()
+            adapter.notifyDataSetChanged()
+            searchPlaceholderText.text = text
+            if (text === SEARCH_NOTHING) {
+                searchPlaceholderImage.setImageResource(R.drawable.search_nothing)
+                updateButton.visibility = View.GONE
+            }
+            if (text === SEARCH_ERROR) {
+                searchPlaceholderImage.setImageResource(R.drawable.search_error)
+                updateButton.visibility = View.VISIBLE
+            }
+            searchPlaceholder.visibility = View.VISIBLE
+        } else {
+            searchPlaceholder.visibility = View.GONE
+        }
+    }
+
+    private fun sendQuery() {
+        if (searchEditText.text.isNotEmpty()) {
+            tunesApiService.search(searchEditText.text.toString())
+                .enqueue(object : Callback<TracksResponse> {
+                    override fun onResponse(
+                        call: Call<TracksResponse>,
+                        response: Response<TracksResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            tracks.clear()
+                            val results : List<Track>? = response.body()?.results
+                            if (results?.isNotEmpty() == true) {
+                                tracks.addAll(results)
+                                adapter.notifyDataSetChanged()
+                            }
+                            if (tracks.isEmpty()) {
+                                showPlaceholder(SEARCH_NOTHING)
+                            } else {
+                                showPlaceholder("")
+                            }
+                        } else {
+                            showPlaceholder(SEARCH_ERROR)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        showPlaceholder(SEARCH_ERROR)
+                    }
+                })
+        }
+    }
+
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
         const val DEF_STRING = ""
+        const val SEARCH_NOTHING = "Ничего не нашлось"
+        const val SEARCH_ERROR = "Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету"
     }
 }

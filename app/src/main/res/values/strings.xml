@@ -16,4 +16,6 @@
     <string name="email_text">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
 
+    <string name="update">Обновить</string>
+
 </resources>

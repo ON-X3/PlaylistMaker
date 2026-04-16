@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.util.Locale
 
 class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
 
@@ -17,9 +19,9 @@ class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
     private val artistNameView: TextView = itemView.findViewById(R.id.artistName)
 
     fun bind(model: Track) {
-        trackNameView.text = model.trackName
-        artistNameView.text = model.artistName
-        trackTimeView.text = model.trackTime
+        trackNameView.text = model.trackName.trim()
+        artistNameView.text = model.artistName.trim()
+        trackTimeView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
         artwokrView.imageTintList = null
         Glide.with(itemView)
             .load(model.artworkUrl100)
@@ -28,6 +30,7 @@ class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
             .centerCrop()
             .transform(RoundedCorners(dpToPx(2f, itemView.context)))
             .into(artwokrView)
+        artistNameView.requestLayout()
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {

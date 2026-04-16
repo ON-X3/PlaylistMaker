@@ -48,7 +48,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                tools:text="The Beatles gfjkkjfdfg dfgdfgdfgd fgdfgdfdffs kweqw[p vrekugr"
+                tools:text="The Beatles gfjkkjfdfg dfgdfgdfgd fgdffgdfgsdfgg"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"/>
