@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getString
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -36,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
 
     val tunesApiService = retrofit.create<TunesApiService>()
 
-    private val tracks = ArrayList<Track>()
+    private val tracks: MutableList<Track> = mutableListOf()
     private val adapter = TrackAdapter(tracks)
 
     private lateinit var searchPlaceholder: LinearLayout
@@ -132,11 +133,11 @@ class SearchActivity : AppCompatActivity() {
             tracks.clear()
             adapter.notifyDataSetChanged()
             searchPlaceholderText.text = text
-            if (text == getString(R.string.search_nothing)) {
+            if (text === SEARCH_NOTHING) {
                 searchPlaceholderImage.setImageResource(R.drawable.search_nothing)
                 updateButton.visibility = View.GONE
             }
-            if (text == getString(R.string.search_error)) {
+            if (text === SEARCH_ERROR) {
                 searchPlaceholderImage.setImageResource(R.drawable.search_error)
                 updateButton.visibility = View.VISIBLE
             }
@@ -154,24 +155,25 @@ class SearchActivity : AppCompatActivity() {
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
-                        if (response.code() == 200) {
+                        if (response.isSuccessful) {
                             tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results!!)
+                            val results : List<Track>? = response.body()?.results
+                            if (results?.isNotEmpty() == true) {
+                                tracks.addAll(results)
                                 adapter.notifyDataSetChanged()
                             }
                             if (tracks.isEmpty()) {
-                                showPlaceholder(getString(R.string.search_nothing))
+                                showPlaceholder(SEARCH_NOTHING)
                             } else {
                                 showPlaceholder("")
                             }
                         } else {
-                            showPlaceholder(getString(R.string.search_error))
+                            showPlaceholder(SEARCH_ERROR)
                         }
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                        showPlaceholder(getString(R.string.search_error))
+                        showPlaceholder(SEARCH_ERROR)
                     }
                 })
         }
@@ -180,5 +182,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
         const val DEF_STRING = ""
+        const val SEARCH_NOTHING = "Ничего не нашлось"
+        const val SEARCH_ERROR = "Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету"
     }
 }
