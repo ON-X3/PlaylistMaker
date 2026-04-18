@@ -111,6 +111,8 @@ class SearchActivity : AppCompatActivity() {
                 if (s?.isEmpty() == true) {
                     showSearchHistory(searchHistory, searchEditText.hasFocus())
                     showPlaceholder("")
+                    tracks.clear()
+                    adapter.notifyDataSetChanged()
                 } else searchHistoryLayout.visibility = View.GONE
             }
 
