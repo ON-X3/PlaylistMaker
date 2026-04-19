@@ -103,5 +103,8 @@
         <item name="cornerRadius">54dp</item>
     </style>
 
-
+    <style name="SearchActivityTextStyle" parent="TitleStyle">
+        <item name="android:textSize">19sp</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

@@ -17,5 +17,7 @@
     <string name="agreement_url">https://yandex.ru/legal/practicum_offer/</string>
 
     <string name="update">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="searched">Вы искали</string>
 
 </resources>
