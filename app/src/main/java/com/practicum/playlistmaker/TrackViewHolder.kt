@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.util.Locale
 
-class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
+class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val artwokrView: ImageView = itemView.findViewById(R.id.artwork)
     private val trackNameView: TextView = itemView.findViewById(R.id.trackName)
@@ -21,7 +21,8 @@ class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
     fun bind(model: Track) {
         trackNameView.text = model.trackName.trim()
         artistNameView.text = model.artistName.trim()
-        trackTimeView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+        trackTimeView.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
         artwokrView.imageTintList = null
         Glide.with(itemView)
             .load(model.artworkUrl100)
@@ -37,5 +38,7 @@ class TrackViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView){
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp,
-            context.resources.displayMetrics).toInt()}
+            context.resources.displayMetrics
+        ).toInt()
+    }
 }
