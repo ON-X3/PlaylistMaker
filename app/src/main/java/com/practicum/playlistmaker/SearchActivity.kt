@@ -202,6 +202,7 @@ class SearchActivity : AppCompatActivity() {
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
                         showPlaceholder(SEARCH_ERROR)
+                        t.printStackTrace()
                     }
                 })
         }
