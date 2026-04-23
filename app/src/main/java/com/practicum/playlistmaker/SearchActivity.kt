@@ -2,6 +2,8 @@ package com.practicum.playlistmaker
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -10,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -48,6 +51,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchEditText: EditText
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var clearHistoryButton: MaterialButton
+    private lateinit var progressBar: ProgressBar
+    private lateinit var trackRecycler: RecyclerView
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val sendQueryRunnable = Runnable {sendQuery()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +73,9 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryLayout = findViewById(R.id.search_history_layout)
         clearHistoryButton = findViewById(R.id.clear_history_button)
         updateButton = findViewById(R.id.update_button)
+        progressBar = findViewById(R.id.progress_bar)
+        trackRecycler = findViewById(R.id.tracksList)
+        trackRecycler.adapter = adapter
 
         updateButton.setOnClickListener {
             sendQuery()
@@ -108,6 +119,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.isVisible = !s.isNullOrEmpty()
                 searchString = s.toString()
+                searchDebounce()
                 if (s?.isEmpty() == true) {
                     showSearchHistory(searchHistory, searchEditText.hasFocus())
                     showPlaceholder("")
@@ -125,13 +137,9 @@ class SearchActivity : AppCompatActivity() {
         }
         searchEditText.requestFocus()
 
-        val trackRecycler = findViewById<RecyclerView>(R.id.tracksList)
-        trackRecycler.adapter = adapter
-
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 sendQuery()
-                true
             }
             false
         }
@@ -177,16 +185,22 @@ class SearchActivity : AppCompatActivity() {
 
     private fun sendQuery() {
         if (searchEditText.text.isNotEmpty()) {
+
+            searchPlaceholder.visibility = View.GONE
+            trackRecycler.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
             tunesApiService.search(searchEditText.text.toString())
                 .enqueue(object : Callback<TracksResponse> {
                     override fun onResponse(
                         call: Call<TracksResponse>,
                         response: Response<TracksResponse>
                     ) {
+                        progressBar.visibility = View.GONE
                         if (response.isSuccessful) {
                             tracks.clear()
                             val results : List<Track>? = response.body()?.results
                             if (results?.isNotEmpty() == true) {
+                                trackRecycler.visibility = View.VISIBLE
                                 tracks.addAll(results)
                                 adapter.notifyDataSetChanged()
                             }
@@ -201,6 +215,7 @@ class SearchActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                        progressBar.visibility = View.GONE
                         showPlaceholder(SEARCH_ERROR)
                         t.printStackTrace()
                     }
@@ -218,11 +233,18 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryLayout.visibility = if (hasFocus && searchEditText.text.isEmpty() && searchHistoryList.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
+    private fun searchDebounce() {
+        handler.removeCallbacks(sendQueryRunnable)
+        handler.postDelayed(sendQueryRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
     companion object {
         const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
         const val SEARCH_STRING = "SEARCH_STRING"
         const val DEF_STRING = ""
         const val SEARCH_NOTHING = "Ничего не нашлось"
         const val SEARCH_ERROR = "Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету"
+        const val CLICK_DEBOUNCE_DELAY = 1000L
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 }

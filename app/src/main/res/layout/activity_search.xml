@@ -35,7 +35,6 @@
             android:hint="@string/search"
             android:imeOptions="actionDone"
             android:inputType="text"
-            android:lines="1"
             android:paddingStart="12dp"
             android:paddingEnd="40dp"
             android:singleLine="true"
@@ -54,6 +53,16 @@
             android:visibility="gone" />
 
     </FrameLayout>
+    
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
+        android:indeterminateTint="@color/yp_blue"
+        android:layout_gravity="center"
+        android:layout_marginTop="124dp"
+        android:visibility="gone"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tracksList"
