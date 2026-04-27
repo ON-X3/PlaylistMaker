@@ -11,7 +11,7 @@ import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -26,11 +26,20 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+        val settingsInteractor = Creator.provideSettingsInteractor(applicationContext)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.theme_switcher)
-        themeSwitcher.isChecked = ((applicationContext as App).settings.darkTheme)
+
+        settingsInteractor.loadSettings{settings ->
+            runOnUiThread{themeSwitcher.isChecked = settings.darkTheme}
+        }
 
         themeSwitcher.setOnCheckedChangeListener {switcher, checked ->
-            (applicationContext as App).switchTheme(true, checked)
+            settingsInteractor.loadSettings{ settings ->
+                runOnUiThread{settingsInteractor.switchTheme(checked)}
+                settings.useSystemTheme = false
+                settings.darkTheme = checked
+                settingsInteractor.saveSettings(settings)
+            }
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)

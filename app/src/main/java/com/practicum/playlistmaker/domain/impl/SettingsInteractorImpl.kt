@@ -5,14 +5,23 @@ import com.practicum.playlistmaker.domain.api.SettingsRepository
 import com.practicum.playlistmaker.domain.models.Settings
 import java.util.concurrent.Executors
 
-class SettingsInteractorImpl(private val repository: SettingsRepository): SettingsInteractor {
+class SettingsInteractorImpl(private val repository: SettingsRepository) : SettingsInteractor {
+
     override fun loadSettings(consumer: SettingsInteractor.SettingsConsumer) {
         val executor = Executors.newCachedThreadPool()
-        executor.execute { consumer.consume(repository.loadSettings()) }
+        executor.execute {
+            consumer.consume(repository.loadSettings())
+        }
     }
+
+    override fun switchTheme(darkThemeEnabled: Boolean) {
+            repository.switchTheme(darkThemeEnabled)
+        }
 
     override fun saveSettings(settings: Settings) {
         val executor = Executors.newCachedThreadPool()
-        executor.execute { repository.saveSettings(settings) }
+        executor.execute {
+            repository.saveSettings(settings)
+        }
     }
-}
+    }

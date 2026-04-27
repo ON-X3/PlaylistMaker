@@ -57,6 +57,9 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        SEARCH_NOTHING = getString(R.string.search_nothing)
+        SEARCH_ERROR = getString(R.string.search_error)
+
         searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
 
         adapter = TrackAdapter(tracks, searchHistoryInteractor)
@@ -251,9 +254,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_STRING = "SEARCH_STRING"
         const val DEF_STRING = ""
 
-        const val SEARCH_NOTHING = "Ничего не нашлось"
-        const val SEARCH_ERROR =
-            "Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету"
+        lateinit var SEARCH_NOTHING: String
+        lateinit var SEARCH_ERROR: String
 
         const val CLICK_DEBOUNCE_DELAY = 1000L
         const val SEARCH_DEBOUNCE_DELAY = 2000L

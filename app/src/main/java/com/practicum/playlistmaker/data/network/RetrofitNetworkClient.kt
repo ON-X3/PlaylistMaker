@@ -7,16 +7,19 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-class RetrofitNetworkClient : NetworkClient {
+class RetrofitNetworkClient (apiService: Class<*>) : NetworkClient {
 
-    private val iTunesBaseUrl = "https://itunes.apple.com"
+    private val apiServiceBaseUrl = when (apiService) {
+        ITunesApiService::class.java -> I_TUNES_BASE_URL
+        else -> ""
+    }
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
+        .baseUrl(apiServiceBaseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val iTunesService = retrofit.create(iTunesApiService::class.java)
+    private val service = retrofit.create(apiService)
 
     override fun doRequest(dto: Any): Response {
         when (dto) {
@@ -29,7 +32,7 @@ class RetrofitNetworkClient : NetworkClient {
         lateinit var body: Response
 
         try {
-            val responce = iTunesService.search(dto.expression).execute()
+            val responce = (service as ITunesApiService).search(dto.expression).execute()
             body = responce.body() ?: Response()
             body.resultCode = responce.code()
         } catch (e: IOException) {
@@ -37,5 +40,7 @@ class RetrofitNetworkClient : NetworkClient {
         }
         return body
     }
-
+    companion object {
+        const val I_TUNES_BASE_URL = "https://itunes.apple.com"
+    }
 }
