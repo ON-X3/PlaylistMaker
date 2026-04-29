@@ -2,29 +2,21 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatDelegate
-
-const val PLAYLISTMAKER_PREFERENCES = "playlistmaker_preferences"
-const val DARK_MODE_KEY = "dark_mode_key"
+import com.practicum.playlistmaker.domain.api.SettingsInteractor
+import com.practicum.playlistmaker.domain.models.Settings
 
 class App : Application() {
-    var darkTheme = false
+    lateinit var settings: Settings
+    private lateinit var settingsInteractor: SettingsInteractor
     override fun onCreate() {
         super.onCreate()
+        settingsInteractor = Creator.provideSettingsInteractor(this)
         val systemNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val prefs = getSharedPreferences(PLAYLISTMAKER_PREFERENCES, MODE_PRIVATE)
-        darkTheme = (systemNightMode == Configuration.UI_MODE_NIGHT_YES)
-        switchTheme(prefs.getBoolean(DARK_MODE_KEY, darkTheme))
-    }
-
-    fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
+        settingsInteractor.loadSettings { settings ->
+            if (settings.useSystemTheme) {
+                settings.darkTheme = systemNightMode == Configuration.UI_MODE_NIGHT_YES
             }
-        )
+            settingsInteractor.saveSettings(settings)
+        }
     }
 }

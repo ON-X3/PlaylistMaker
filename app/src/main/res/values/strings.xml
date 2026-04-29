@@ -26,4 +26,7 @@
     <string name="year">Год</string>
     <string name="genre">Жанр</string>
     <string name="country">Страна</string>
+
+    <string name="search_nothing">Ничего не нашлось</string>
+    <string name="search_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
 </resources>

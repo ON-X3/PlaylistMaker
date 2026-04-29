@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.search
 
 import android.content.Intent
 import android.os.Handler
@@ -7,9 +7,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.practicum.playlistmaker.SearchActivity.Companion.CLICK_DEBOUNCE_DELAY
+import com.practicum.playlistmaker.ui.player.PlayerActivity
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.ui.search.SearchActivity.Companion.CLICK_DEBOUNCE_DELAY
+import com.practicum.playlistmaker.domain.models.Track
 
-class TrackAdapter (val tracks: List<Track>, val searchHistory: SearchHistory) : RecyclerView.Adapter<TrackViewHolder> () {
+class TrackAdapter (val tracks: List<Track>, val searchHistoryInteractor: SearchHistoryInteractor) : RecyclerView.Adapter<TrackViewHolder> () {
 
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
@@ -23,7 +27,8 @@ class TrackAdapter (val tracks: List<Track>, val searchHistory: SearchHistory) :
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener {
             if (clickDebounce()) {
-                searchHistory.addToSearchHistory(tracks[position])
+                searchHistoryInteractor.addToSearchHistory(tracks[position])
+
                 val playerIntent = Intent(it.context, PlayerActivity::class.java)
                 playerIntent.putExtra("track", Gson().toJson(tracks[position]))
                 it.context.startActivity(playerIntent)

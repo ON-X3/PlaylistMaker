@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.player
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
@@ -65,8 +67,7 @@ class PlayerActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.trackName).text = track.trackName
         findViewById<TextView>(R.id.artistName).text = track.artistName
-        findViewById<TextView>(R.id.track_time_value).text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        findViewById<TextView>(R.id.track_time_value).text = track.trackTime
         findViewById<TextView>(R.id.genre_value).text = track.primaryGenreName
         findViewById<TextView>(R.id.country_value).text = track.country
 
@@ -124,7 +125,6 @@ class PlayerActivity : AppCompatActivity() {
     private fun startPlayer() {
         mediaPlayer.start()
         playButton.setBackgroundResource(R.drawable.button_pause_100)
-        playButton.requestLayout()
         playerState = STATE_PLAYING
         startUpdatingPlayProgress()
     }
@@ -145,7 +145,8 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun startUpdatingPlayProgress() {
         if (playerState == STATE_PLAYING) {
-            playProgress.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+            playProgress.text =
+                SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
             handler.postDelayed(playProgressRunnable, PLAY_PROGRESS_UPDATE_DELAY)
         }
     }

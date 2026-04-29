@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -11,6 +11,8 @@ import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,15 +26,19 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
+        val settingsInteractor = Creator.provideSettingsInteractor(applicationContext)
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.theme_switcher)
-        themeSwitcher.isChecked = ((applicationContext as App).darkTheme)
+
+        settingsInteractor.loadSettings{settings ->
+            themeSwitcher.isChecked = settings.darkTheme
+        }
 
         themeSwitcher.setOnCheckedChangeListener {switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-            val prefs = getSharedPreferences(PLAYLISTMAKER_PREFERENCES, MODE_PRIVATE)
-            prefs.edit()
-                .putBoolean(DARK_MODE_KEY, checked)
-                .apply()
+            settingsInteractor.loadSettings{ settings ->
+                settings.useSystemTheme = false
+                settings.darkTheme = checked
+                settingsInteractor.saveSettings(settings)
+            }
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
