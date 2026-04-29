@@ -57,14 +57,11 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        SEARCH_NOTHING = getString(R.string.search_nothing)
-        SEARCH_ERROR = getString(R.string.search_error)
-
         searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
 
         adapter = TrackAdapter(tracks, searchHistoryInteractor)
         searchHistoryAdapter = TrackAdapter(searchHistoryList, searchHistoryInteractor)
-        searchHistoryRecycler = findViewById<RecyclerView>(R.id.search_history_list)
+        searchHistoryRecycler = findViewById(R.id.search_history_list)
         searchHistoryRecycler.adapter = searchHistoryAdapter
 
         searchEditText = findViewById(R.id.searchEditText)
@@ -79,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
         trackRecycler = findViewById(R.id.tracksList)
         trackRecycler.adapter = adapter
 
-        searchHistoryRecycler = findViewById<RecyclerView>(R.id.search_history_list)
+        searchHistoryRecycler = findViewById(R.id.search_history_list)
         searchHistoryRecycler.adapter = searchHistoryAdapter
 
         updateButton.setOnClickListener {
@@ -184,10 +181,10 @@ class SearchActivity : AppCompatActivity() {
                             adapter.notifyDataSetChanged()
                             showListOfTracks()
                         } else {
-                            showPlaceholder(SEARCH_NOTHING)
+                            showPlaceholder(getString(R.string.search_nothing))
                         }
                     } else {
-                        showPlaceholder(SEARCH_ERROR)
+                        showPlaceholder(getString(R.string.search_error))
                     }
                 }
             }
@@ -216,11 +213,11 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showPlaceholder(text: String) {
         searchPlaceholderText.text = text
-        if (text === SEARCH_NOTHING) {
+        if (text === getString(R.string.search_nothing)) {
             searchPlaceholderImage.setImageResource(R.drawable.search_nothing)
             updateButton.visibility = View.GONE
         }
-        if (text === SEARCH_ERROR) {
+        if (text === getString(R.string.search_error)) {
             searchPlaceholderImage.setImageResource(R.drawable.search_error)
             updateButton.visibility = View.VISIBLE
         }
@@ -253,9 +250,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_STRING = "SEARCH_STRING"
         const val DEF_STRING = ""
-
-        lateinit var SEARCH_NOTHING: String
-        lateinit var SEARCH_ERROR: String
 
         const val CLICK_DEBOUNCE_DELAY = 1000L
         const val SEARCH_DEBOUNCE_DELAY = 2000L

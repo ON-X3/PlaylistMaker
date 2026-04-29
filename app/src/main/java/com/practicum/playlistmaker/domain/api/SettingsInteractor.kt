@@ -4,7 +4,6 @@ import com.practicum.playlistmaker.domain.models.Settings
 
 interface SettingsInteractor {
     fun loadSettings(consumer: SettingsConsumer)
-    fun switchTheme(darkThemeEnabled: Boolean)
     fun saveSettings(settings: Settings)
 
     fun interface SettingsConsumer {

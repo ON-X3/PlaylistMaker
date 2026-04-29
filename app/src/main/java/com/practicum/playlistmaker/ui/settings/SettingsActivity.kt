@@ -30,12 +30,11 @@ class SettingsActivity : AppCompatActivity() {
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.theme_switcher)
 
         settingsInteractor.loadSettings{settings ->
-            runOnUiThread{themeSwitcher.isChecked = settings.darkTheme}
+            themeSwitcher.isChecked = settings.darkTheme
         }
 
         themeSwitcher.setOnCheckedChangeListener {switcher, checked ->
             settingsInteractor.loadSettings{ settings ->
-                runOnUiThread{settingsInteractor.switchTheme(checked)}
                 settings.useSystemTheme = false
                 settings.darkTheme = checked
                 settingsInteractor.saveSettings(settings)
