@@ -15,20 +15,20 @@
         app:titleTextAppearance="@style/TitleStyle" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/search_button"
+        android:id="@+id/searchButton"
         android:layout_marginTop="24dp"
         android:text="@string/search"
         app:icon="@drawable/ic_search_24"
         style="@style/MainButtonStyle" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/library_button"
+        android:id="@+id/libraryButton"
         android:text="@string/library"
         app:icon="@drawable/ic_library_24"
         style="@style/MainButtonStyle" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/settings_button"
+        android:id="@+id/settingsButton"
         android:layout_marginBottom="28dp"
         android:text="@string/settings"
         app:icon="@drawable/ic_settings_24"

@@ -2,8 +2,9 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import android.content.res.Configuration
-import com.practicum.playlistmaker.domain.api.SettingsInteractor
-import com.practicum.playlistmaker.domain.models.Settings
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
+import com.practicum.playlistmaker.settings.domain.models.Settings
 
 class App : Application() {
     lateinit var settings: Settings
