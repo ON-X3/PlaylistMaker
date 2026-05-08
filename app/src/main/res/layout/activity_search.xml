@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.search.SearchActivity">
+    tools:context=".search.ui.activity.SearchActivity">
 
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -42,7 +42,7 @@
 
 
         <ImageView
-            android:id="@+id/clear_button"
+            android:id="@+id/clearButton"
             style="@style/SearchBoxIconStyle"
             android:layout_width="40dp"
             android:layout_height="match_parent"
@@ -55,7 +55,7 @@
     </FrameLayout>
     
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progressBar"
         android:layout_width="@dimen/progress_bar_size"
         android:layout_height="@dimen/progress_bar_size"
         android:indeterminateTint="@color/yp_blue"
@@ -74,7 +74,7 @@
         tools:listitem="@layout/track_item" />
 
     <LinearLayout
-        android:id="@+id/search_placeholder"
+        android:id="@+id/searchPlaceholder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -82,7 +82,7 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/search_placeholder_image"
+            android:id="@+id/searchPlaceholderImage"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
@@ -90,7 +90,7 @@
             tools:src="@drawable/search_nothing" />
 
         <TextView
-            android:id="@+id/search_placeholder_text"
+            android:id="@+id/searchPlaceholderText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -100,7 +100,7 @@
             tools:text="Ничего не нашлось" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/update_button"
+            android:id="@+id/updateButton"
             style="@style/SearchActivityButton"
             android:text="@string/update"
             android:visibility="gone" />
@@ -108,7 +108,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/search_history_layout"
+        android:id="@+id/searchHistoryLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -125,7 +125,7 @@
             android:text="@string/searched"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_history_list"
+            android:id="@+id/searchHistoryList"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -135,7 +135,7 @@
             tools:listitem="@layout/track_item" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/clear_history_button"
+            android:id="@+id/clearHistoryButton"
             style="@style/SearchActivityButton"
             android:text="@string/clear_history"
             android:layout_marginBottom="@dimen/basic_padding"/>

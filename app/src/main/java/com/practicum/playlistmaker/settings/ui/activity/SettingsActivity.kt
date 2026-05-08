@@ -1,0 +1,57 @@
+package com.practicum.playlistmaker.settings.ui.activity
+
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.settings.ui.viewmodel.SettingsViewModel
+
+class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: SettingsViewModel
+    private lateinit var binding: ActivitySettingsBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
+            insets
+        }
+
+        viewModel = Creator.provideSettingsViewModel(this, applicationContext)
+
+        viewModel.observeDarkTheme().observe(this) {
+            binding.themeSwitcher.isChecked = it
+        }
+
+        binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            viewModel.switchTheme(checked)
+        }
+
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
+        binding.shareButton.setOnClickListener {
+            viewModel.onShareAppClick()
+        }
+
+        binding.supportButton.setOnClickListener {
+            viewModel.onSupportClick()
+        }
+
+        binding.agreementButton.setOnClickListener {
+            viewModel.onTermsClick()
+        }
+    }
+}
