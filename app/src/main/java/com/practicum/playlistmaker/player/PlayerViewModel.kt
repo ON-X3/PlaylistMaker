@@ -15,11 +15,12 @@ import java.util.Locale
 class PlayerViewModel(private val trackUrl: String) : ViewModel() {
 
     private var mediaPlayer = MediaPlayer()
+    private val playProgressDefaultValue = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
 
     private val playerStateLiveData = MutableLiveData<Int>(STATE_DEFAULT)
     fun observePlayerState(): LiveData<Int> = playerStateLiveData
 
-    private val playProgressLiveData = MutableLiveData<String>("00:00")
+    private val playProgressLiveData = MutableLiveData<String>(playProgressDefaultValue)
     fun observePlayProgress(): LiveData<String> = playProgressLiveData
 
     private var handler = Handler(Looper.getMainLooper())
@@ -44,7 +45,7 @@ class PlayerViewModel(private val trackUrl: String) : ViewModel() {
         mediaPlayer.setOnCompletionListener {
             playerStateLiveData.postValue(STATE_PREPARED)
             handler.removeCallbacks(playProgressRunnable)
-            playProgressLiveData.postValue("00:00")
+            playProgressLiveData.postValue(playProgressDefaultValue)
         }
     }
 

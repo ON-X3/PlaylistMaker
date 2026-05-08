@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.ui.viewmodel.SettingsViewModel
 
@@ -28,10 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory()
-        ).get(SettingsViewModel::class.java)
+        viewModel = Creator.provideSettingsViewModel(this, applicationContext)
 
         viewModel.observeDarkTheme().observe(this) {
             binding.themeSwitcher.isChecked = it

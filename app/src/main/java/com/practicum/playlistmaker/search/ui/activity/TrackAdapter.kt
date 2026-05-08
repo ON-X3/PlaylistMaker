@@ -2,11 +2,11 @@ package com.practicum.playlistmaker.search.ui.activity
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.ui.models.TrackUi
 
 class TrackAdapter (val clickListener: TrackClickListener) : RecyclerView.Adapter<TrackViewHolder> () {
 
-    var tracks: MutableList<Track> = mutableListOf()
+    var tracks: MutableList<TrackUi> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder = TrackViewHolder.from(parent)
 
@@ -20,6 +20,6 @@ class TrackAdapter (val clickListener: TrackClickListener) : RecyclerView.Adapte
 
 
     fun interface TrackClickListener {
-        fun onTrackClick(track: Track)
+        fun onTrackClick(track: TrackUi)
     }
 }

@@ -1,6 +1,8 @@
 package com.practicum.playlistmaker.creator
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
@@ -21,6 +23,8 @@ import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.data.storage.PrefsKey
 import com.practicum.playlistmaker.search.domain.impl.TracksInteractorImpl
+import com.practicum.playlistmaker.search.ui.viewmodel.SearchViewModel
+import com.practicum.playlistmaker.settings.ui.viewmodel.SettingsViewModel
 import com.practicum.playlistmaker.sharing.data.ExternalNavigatorImpl
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.api.SharingInteractor
@@ -31,7 +35,7 @@ object Creator {
         return TracksRepositoryImpl(RetrofitNetworkClient(ITunesApiService::class.java, context))
     }
 
-    fun provideTracksInteractor(context: Context): TracksInteractor {
+    fun getTracksInteractor(context: Context): TracksInteractor {
         return TracksInteractorImpl(getTracksRepository(context))
     }
 
@@ -46,12 +50,19 @@ object Creator {
         )
     }
 
-    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
+    fun getSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
         return SearchHistoryInteractorImpl(getSearchHistoryRepository(context))
     }
 
     private fun getSettingsRepository(context: Context): SettingsRepository {
-        return SettingsRepositoryImpl(SharedPreferences(context, PrefsKey.SETTINGS, object: TypeToken<SettingsDto>() {}.type, Gson()))
+        return SettingsRepositoryImpl(
+            SharedPreferences(
+                context,
+                PrefsKey.SETTINGS,
+                object : TypeToken<SettingsDto>() {}.type,
+                Gson()
+            )
+        )
     }
 
     fun provideSettingsInteractor(context: Context): SettingsInteractor {
@@ -62,7 +73,28 @@ object Creator {
         return ExternalNavigatorImpl(context)
     }
 
-    fun provideSharingInteractor(context: Context): SharingInteractor {
+    private fun getSharingInteractor(context: Context): SharingInteractor {
         return SharingInteractorImpl(getExternalNavigator(context))
     }
+
+    fun provideSearchViewModel(owner: AppCompatActivity, appContext: Context): SearchViewModel {
+        return ViewModelProvider(
+            owner,
+            SearchViewModel.getFactory(
+                getTracksInteractor(appContext),
+                getSearchHistoryInteractor(appContext)
+            )
+        ).get(SearchViewModel::class.java)
+    }
+
+    fun provideSettingsViewModel(owner: AppCompatActivity, appContext: Context): SettingsViewModel {
+        return ViewModelProvider(
+            owner,
+            SettingsViewModel.getFactory(
+                provideSettingsInteractor(appContext),
+                getSharingInteractor(appContext)
+            )
+        ).get(SettingsViewModel::class.java)
+    }
+
 }

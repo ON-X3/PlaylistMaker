@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.search.data
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<TrackDto>>): SearchHistoryRepository {
     override fun loadSearchHistory(): List<Track> {
@@ -15,7 +13,7 @@ class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<
                     it.trackId,
                     it.trackName,
                     it.artistName,
-                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis),
+                    it.trackTimeMillis,
                     it.artworkUrl100,
                     it.collectionName,
                     it.releaseDate,
@@ -34,7 +32,7 @@ class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<
         val addedTrackDto = TrackDto (track.trackId,
             track.trackName,
             track.artistName,
-            stringToMs(track.trackTime),
+            track.trackTime,
             track.artworkUrl100,
             track.collectionName,
             track.releaseDate,
@@ -62,12 +60,6 @@ class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<
 
     override fun clearHistory() {
         storageClient.deleteData()
-    }
-
-    private fun stringToMs(string: String): Long {
-        val (min, sec) = string.split(":")
-        val ms = (min.toLong()*60 + sec.toLong())*1000
-        return ms
     }
 
     companion object {

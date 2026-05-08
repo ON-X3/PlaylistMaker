@@ -7,8 +7,6 @@ import com.practicum.playlistmaker.search.data.dto.TracksResponse
 import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.util.Resource
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
 
@@ -29,7 +27,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                 it.trackId,
                 it.trackName,
                 it.artistName,
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis),
+                it.trackTimeMillis,
                 it.artworkUrl100,
                 it.collectionName,
                 it.releaseDate,

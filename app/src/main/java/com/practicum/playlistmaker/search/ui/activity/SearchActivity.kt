@@ -18,13 +18,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.gson.Gson
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.PlayerActivity
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchState
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchViewModel
 
@@ -67,8 +66,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel =
-            ViewModelProvider(this, SearchViewModel.getFactory()).get(SearchViewModel::class.java)
+        viewModel = Creator.provideSearchViewModel(this, applicationContext)
         binding.searchEditText.setText(viewModel.getLatestSearchText())
 
         viewModel.observeState().observe(this) {
@@ -134,8 +132,8 @@ class SearchActivity : AppCompatActivity() {
     private fun render(state: SearchState) {
         when (state) {
             is SearchState.Loading -> showLoadingState()
-            is SearchState.Error -> showErrorState(state.errorMessage)
-            is SearchState.Empty -> showEmptyState(state.message)
+            is SearchState.Error -> showErrorState(state.errorMessageId)
+            is SearchState.Empty -> showEmptyState(state.messageId)
             is SearchState.Content -> showContentState(state.tracks)
             is SearchState.History -> showHistoryState(state.tracks)
             is SearchState.EmptyScreen -> showEmptyScreenState()
@@ -149,28 +147,28 @@ class SearchActivity : AppCompatActivity() {
         showProgressBar()
     }
 
-    private fun showErrorState(placeholderText: String) {
+    private fun showErrorState(placeholderTextId: Int) {
         hideProgressBar()
         hideListOfTracks()
         hideSearchHistory()
-        showPlaceholder(placeholderText)
+        showPlaceholder(getString(placeholderTextId))
     }
 
-    private fun showEmptyState(placeholderText: String) {
+    private fun showEmptyState(placeholderTextId: Int) {
         hideProgressBar()
         hideListOfTracks()
         hideSearchHistory()
-        showPlaceholder(placeholderText)
+        showPlaceholder(getString(placeholderTextId))
     }
 
-    private fun showContentState(foundTracks: List<Track>) {
+    private fun showContentState(foundTracks: List<TrackUi>) {
         hideProgressBar()
         hidePlaceholder()
         hideSearchHistory()
         showListOfTracks(foundTracks)
     }
 
-    private fun showHistoryState(tracks: List<Track>) {
+    private fun showHistoryState(tracks: List<TrackUi>) {
         hideProgressBar()
         hidePlaceholder()
         hideListOfTracks()
@@ -196,7 +194,7 @@ class SearchActivity : AppCompatActivity() {
         binding.tracksList.visibility = View.GONE
     }
 
-    private fun showListOfTracks(foundTracks: List<Track>) {
+    private fun showListOfTracks(foundTracks: List<TrackUi>) {
         adapter.tracks.clear()
         adapter.tracks.addAll(foundTracks)
         adapter.notifyDataSetChanged()
@@ -224,7 +222,7 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryLayout.visibility = View.GONE
     }
 
-    private fun showSearchHistory(listOfTracks: List<Track>) {
+    private fun showSearchHistory(listOfTracks: List<TrackUi>) {
         searchHistoryAdapter.tracks.clear()
         searchHistoryAdapter.tracks.addAll(listOfTracks)
         searchHistoryAdapter.notifyDataSetChanged()
@@ -240,13 +238,13 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    private fun onTrackClick(track: Track) {
+    private fun onTrackClick(track: TrackUi) {
         if (clickDebounce()) {
 
             viewModel.addToHistory(track)
 
             val playerIntent = Intent(this, PlayerActivity::class.java)
-            playerIntent.putExtra("track", Gson().toJson(track))
+            playerIntent.putExtra("track", track)
             startActivity(playerIntent)
         }
     }

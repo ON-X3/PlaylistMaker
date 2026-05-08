@@ -12,10 +12,9 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.ui.models.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -35,8 +34,7 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
-        val json = intent.getStringExtra("track")
-        val track = Gson().fromJson(json, Track::class.java)
+        val track = intent.getParcelableExtra<TrackUi>("track")!!
 
         viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(track.previewUrl)).get(PlayerViewModel::class.java)
 
@@ -85,7 +83,7 @@ class PlayerActivity : AppCompatActivity() {
         binding.playButton.isEnabled = isEnabled
     }
 
-    private fun bindTrackInfo(track: Track) {
+    private fun bindTrackInfo(track: TrackUi) {
         Glide.with(this)
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.placeholder_45)
