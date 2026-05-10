@@ -4,7 +4,8 @@ import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 
-class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<TrackDto>>): SearchHistoryRepository {
+class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<TrackDto>>) :
+    SearchHistoryRepository {
     override fun loadSearchHistory(): List<Track> {
         val listOfTracks = storageClient.getData()
         return if (listOfTracks?.isNotEmpty() == true) {
@@ -29,7 +30,8 @@ class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<
         val savedTracks = mutableListOf<TrackDto>()
         savedTracks.addAll(storageClient.getData() ?: emptyList())
 
-        val addedTrackDto = TrackDto (track.trackId,
+        val addedTrackDto = TrackDto(
+            track.trackId,
             track.trackName,
             track.artistName,
             track.trackTime,
@@ -38,7 +40,8 @@ class SearchHistoryRepositoryImpl(private val storageClient: StorageClient<List<
             track.releaseDate,
             track.primaryGenreName,
             track.country,
-            track.previewUrl)
+            track.previewUrl
+        )
 
         if (savedTracks.isEmpty()) {
             savedTracks.add(addedTrackDto)
