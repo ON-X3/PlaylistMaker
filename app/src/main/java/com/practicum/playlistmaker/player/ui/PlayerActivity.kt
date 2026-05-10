@@ -14,10 +14,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.ui.models.TrackUi
-import org.koin.core.component.KoinComponent
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class PlayerActivity : AppCompatActivity(), KoinComponent {
+class PlayerActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityPlayerBinding
@@ -37,8 +37,8 @@ class PlayerActivity : AppCompatActivity(), KoinComponent {
 
         val track = intent.getParcelableExtra<TrackUi>("track")!!
 
-        viewModel = getKoin().get { parametersOf(track.previewUrl) }
-        viewModel.onCreate()
+        viewModel = getViewModel { parametersOf(track.previewUrl) }
+
 
         binding.playButton.isEnabled = false
         binding.playButton.setOnClickListener {

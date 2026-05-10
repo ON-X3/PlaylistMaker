@@ -16,21 +16,21 @@ import org.koin.dsl.module
 
 val searchModule = module {
 
-    single<TracksRepository> {
+    factory<TracksRepository> {
 
         TracksRepositoryImpl(get())
     }
 
-    single<TracksInteractor> {
+    factory<TracksInteractor> {
         TracksInteractorImpl(get())
     }
 
-    single<SearchHistoryRepository> {
+    factory<SearchHistoryRepository> {
         Log.i("TEST", "Search history repository")
         SearchHistoryRepositoryImpl(get(qualifier = named("historyStorage")))
     }
 
-    single<SearchHistoryInteractor> {
+    factory<SearchHistoryInteractor> {
         Log.i("TEST", "Search history interactor")
         SearchHistoryInteractorImpl(get())
     }

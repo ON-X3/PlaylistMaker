@@ -22,15 +22,15 @@ val settingsModule = module {
         SettingsRepositoryImpl(get(qualifier = named("settingsStorage")))
     }
 
-    single<SettingsInteractor> {
+    factory<SettingsInteractor> {
         SettingsInteractorImpl(get())
     }
 
-    single<ExternalNavigator> {
+    factory<ExternalNavigator> {
         ExternalNavigatorImpl(androidContext())
     }
 
-    single<SharingInteractor> {
+    factory<SharingInteractor> {
         SharingInteractorImpl(get())
     }
 
