@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import java.util.concurrent.Executors
 
-class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepository):
+class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepository) :
     SearchHistoryInteractor {
 
 

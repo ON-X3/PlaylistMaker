@@ -31,6 +31,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -51,15 +52,17 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("com.github.bumptech.glide:glide:5.0.5")
-    annotationProcessor("com.github.bumptech.glide:compiler:5.0.5")
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
 
-    implementation("com.google.code.gson:gson:2.13.2")
+    implementation(libs.gson)
 
-    implementation("com.squareup.retrofit2:retrofit:3.0.0")
-    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
-    implementation("androidx.activity:activity-ktx:1.13.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.10.0")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+
+    implementation(libs.koin.android)
 }

@@ -16,8 +16,9 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
             -1 -> {
                 Resource.Error("No active connection")
             }
+
             in 200..299 -> Resource.Success(fromDto((response as TracksResponse).results))
-            else -> return Resource.Error("Server error")
+            else -> Resource.Error("Server error")
         }
     }
 

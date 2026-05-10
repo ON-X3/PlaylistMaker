@@ -7,13 +7,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.ui.viewmodel.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,13 +28,11 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = Creator.provideSettingsViewModel(this, applicationContext)
-
         viewModel.observeDarkTheme().observe(this) {
             binding.themeSwitcher.isChecked = it
         }
 
-        binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+        binding.themeSwitcher.setOnCheckedChangeListener { _, checked ->
             viewModel.switchTheme(checked)
         }
 
@@ -53,5 +51,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.agreementButton.setOnClickListener {
             viewModel.onTermsClick()
         }
+
+        viewModel.onCreate()
     }
 }

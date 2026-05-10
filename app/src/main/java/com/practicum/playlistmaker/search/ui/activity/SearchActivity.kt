@@ -20,12 +20,12 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import com.google.android.material.appbar.MaterialToolbar
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.PlayerActivity
+import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchState
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -34,7 +34,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryAdapter: TrackAdapter
     private lateinit var binding: ActivitySearchBinding
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
     private lateinit var searchTextWatcher: TextWatcher
 
     private val handler = Handler(Looper.getMainLooper())
@@ -66,7 +66,6 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = Creator.provideSearchViewModel(this, applicationContext)
         binding.searchEditText.setText(viewModel.getLatestSearchText())
 
         viewModel.observeState().observe(this) {
@@ -83,7 +82,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
         val clearButton = findViewById<ImageView>(R.id.clearButton)
         clearButton.setOnClickListener {
@@ -111,7 +110,7 @@ class SearchActivity : AppCompatActivity() {
         }
         binding.searchEditText.apply {
             addTextChangedListener(searchTextWatcher)
-            setOnFocusChangeListener { v, hasFocus ->
+            setOnFocusChangeListener { _, hasFocus ->
                 viewModel.showHistory(hasFocus, this.text.toString())
             }
             requestFocus()

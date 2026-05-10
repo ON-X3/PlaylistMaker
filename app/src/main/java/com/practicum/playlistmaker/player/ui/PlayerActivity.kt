@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player
+package com.practicum.playlistmaker.player.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -9,12 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.ui.models.TrackUi
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -36,7 +37,8 @@ class PlayerActivity : AppCompatActivity() {
 
         val track = intent.getParcelableExtra<TrackUi>("track")!!
 
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(track.previewUrl)).get(PlayerViewModel::class.java)
+        viewModel = getViewModel { parametersOf(track.previewUrl) }
+
 
         binding.playButton.isEnabled = false
         binding.playButton.setOnClickListener {
@@ -79,7 +81,7 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun enableButton (isEnabled: Boolean) {
+    private fun enableButton(isEnabled: Boolean) {
         binding.playButton.isEnabled = isEnabled
     }
 

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player
+package com.practicum.playlistmaker.player.ui
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
@@ -7,14 +7,14 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import java.util.Locale
 
-class PlayerViewModel(private val trackUrl: String) : ViewModel() {
+class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: MediaPlayer) : ViewModel() {
 
-    private var mediaPlayer = MediaPlayer()
+    init {
+        preparePlayer()
+    }
+
     private val playProgressDefaultValue = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
 
     private val playerStateLiveData = MutableLiveData<Int>(STATE_DEFAULT)
@@ -78,12 +78,6 @@ class PlayerViewModel(private val trackUrl: String) : ViewModel() {
     }
 
     companion object {
-        fun getFactory(trackUrl: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(trackUrl).apply { preparePlayer() }
-            }
-        }
-
         const val STATE_DEFAULT = 0
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
