@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".library.ui.activity.LibraryActivity"
     android:orientation="vertical"
+    android:background="?attr/colorPrimary"
     >
 
     <com.google.android.material.appbar.MaterialToolbar
