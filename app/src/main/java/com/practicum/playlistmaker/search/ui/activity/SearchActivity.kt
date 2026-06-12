@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.ui.activity
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -18,7 +17,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import com.google.android.material.appbar.MaterialToolbar
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
@@ -76,8 +74,7 @@ class SearchActivity : AppCompatActivity() {
             Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         }
 
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationOnClickListener {
             finish()
         }
 

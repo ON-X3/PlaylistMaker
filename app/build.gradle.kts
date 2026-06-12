@@ -65,4 +65,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     implementation(libs.koin.android)
+
+    implementation(libs.androidx.fragment.ktx)
 }

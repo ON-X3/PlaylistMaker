@@ -9,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
-import com.practicum.playlistmaker.library.LibraryActivity
+import com.practicum.playlistmaker.library.ui.activity.LibraryActivity
 import com.practicum.playlistmaker.search.ui.activity.SearchActivity
 import com.practicum.playlistmaker.settings.ui.activity.SettingsActivity
 
