@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="?attr/colorPrimary"
-    tools:context=".settings.ui.activity.SettingsFragment">
+    tools:context=".settings.ui.fragment.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"

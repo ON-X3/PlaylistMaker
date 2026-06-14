@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.RootActivity"
+    tools:context=".root.RootActivity"
     android:background="?attr/colorPrimary"
     >
 
@@ -16,7 +16,7 @@
         android:layout_height="0dp"
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_graph"
-        tools:context=".main.RootActivity"
+        tools:context=".root.RootActivity"
 
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

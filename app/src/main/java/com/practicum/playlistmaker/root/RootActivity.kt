@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.main
+package com.practicum.playlistmaker.root
 
 import android.os.Bundle
 import android.view.View

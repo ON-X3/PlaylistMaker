@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".main.RootActivity"
+            android:name=".root.RootActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustNothing">
             <intent-filter>
@@ -24,21 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".player.ui.PlayerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".library.ui.activity.LibraryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".search.ui.activity.SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".settings.ui.activity.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".main.MainActivity"
-            android:exported="true" />
     </application>
 
 </manifest>

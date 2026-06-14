@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.search.ui.fragment
 
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
