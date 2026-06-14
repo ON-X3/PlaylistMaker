@@ -2,18 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".search.ui.activity.SearchActivity"
+    tools:context=".search.ui.fragment.SearchFragment"
     android:background="?attr/colorPrimary">
 
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
         app:title="@string/search" />
 
     <FrameLayout
@@ -39,7 +37,8 @@
             android:paddingStart="12dp"
             android:paddingEnd="40dp"
             android:singleLine="true"
-            android:textColor="@color/yp_black" />
+            android:textColor="@color/yp_black"
+            android:importantForAutofill="no"/>
 
 
         <ImageView
@@ -51,10 +50,11 @@
             android:background="@android:color/transparent"
             android:paddingHorizontal="12dp"
             android:src="@drawable/ic_clear_16"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:contentDescription="@string/clear_button_description" />
 
     </FrameLayout>
-    
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="@dimen/progress_bar_size"
@@ -85,7 +85,8 @@
         <ImageView
             android:id="@+id/searchPlaceholderImage"
             style="@style/PlaceholderImageStyle"
-            tools:src="@drawable/search_nothing" />
+            tools:src="@drawable/search_nothing"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/searchPlaceholderText"
@@ -109,7 +110,7 @@
         android:visibility="gone"
         tools:visibility="visible"
         >
-        
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -3,39 +3,47 @@ package com.practicum.playlistmaker.player.ui
 import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
 
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var binding: ActivityPlayerBinding
     private lateinit var viewModel: PlayerViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    companion object {
+        private const val ARGS_TRACK = "track"
 
-        enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
-            insets
+        fun createArgs(track: TrackUi): Bundle = Bundle().apply {
+            putParcelable(ARGS_TRACK, track)
         }
+    }
 
-        val track = intent.getParcelableExtra<TrackUi>("track")!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val track = requireArguments().getParcelable<TrackUi>(ARGS_TRACK)!!
 
         viewModel = getViewModel { parametersOf(track.previewUrl) }
 
@@ -45,17 +53,17 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        viewModel.observePlayerState().observe(this) {
+        viewModel.observePlayerState().observe(viewLifecycleOwner) {
             changeButtonImage(it == PlayerViewModel.STATE_PLAYING)
             enableButton(it != PlayerViewModel.STATE_DEFAULT)
         }
 
-        viewModel.observePlayProgress().observe(this) {
+        viewModel.observePlayProgress().observe(viewLifecycleOwner) {
             binding.playProgress.text = it
         }
 
         binding.toolbar.setNavigationOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
         bindTrackInfo(track)
     }
@@ -63,6 +71,11 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun dpToPx(dp: Float, context: Context): Int {
@@ -90,8 +103,8 @@ class PlayerActivity : AppCompatActivity() {
             .load(track.getCoverArtwork())
             .placeholder(R.drawable.placeholder_45)
             .error(R.drawable.placeholder_45)
-            .transform(RoundedCorners(dpToPx(8f, this)))
-            .into(findViewById(R.id.artwork))
+            .transform(RoundedCorners(dpToPx(8f, requireContext())))
+            .into(binding.artwork)
 
         binding.trackName.text = track.trackName
         binding.artistName.text = track.artistName

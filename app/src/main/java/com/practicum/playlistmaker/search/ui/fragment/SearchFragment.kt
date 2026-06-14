@@ -1,46 +1,51 @@
-package com.practicum.playlistmaker.search.ui.activity
+package com.practicum.playlistmaker.search.ui.fragment
 
-import android.content.Intent
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchState
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private var isClickAllowed = true
     private lateinit var adapter: TrackAdapter
     private lateinit var searchHistoryAdapter: TrackAdapter
-    private lateinit var binding: ActivitySearchBinding
-
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var searchTextWatcher: TextWatcher
-
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         adapter = TrackAdapter { track ->
             onTrackClick(track)
@@ -57,32 +62,20 @@ class SearchActivity : AppCompatActivity() {
             viewModel.searchTracks(binding.searchEditText.text.toString())
         }
 
-        enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
-            insets
-        }
-
         binding.searchEditText.setText(viewModel.getLatestSearchText())
 
-        viewModel.observeState().observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
-        viewModel.observeShowToast().observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-        }
-
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+        viewModel.observeShowToast().observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         }
 
         val inputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        val clearButton = findViewById<ImageView>(R.id.clearButton)
-        clearButton.setOnClickListener {
+        binding.clearButton.setOnClickListener {
             binding.searchEditText.setText("")
             inputMethodManager?.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
             viewModel.showHistory(binding.searchEditText.hasFocus(), "")
@@ -97,7 +90,7 @@ class SearchActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.isVisible = !s.isNullOrEmpty()
+                binding.clearButton.isVisible = !s.isNullOrEmpty()
                 if (!s.isNullOrEmpty()) hideSearchHistory()
                 viewModel.showHistory(binding.searchEditText.hasFocus(), s?.toString() ?: "")
                 viewModel.searchDebounce(s?.toString() ?: "")
@@ -111,6 +104,7 @@ class SearchActivity : AppCompatActivity() {
                 viewModel.showHistory(hasFocus, this.text.toString())
             }
             requestFocus()
+            inputMethodManager?.showSoftInput(binding.searchEditText, InputMethodManager.SHOW_IMPLICIT)
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     viewModel.searchTracks(this.text.toString())
@@ -120,9 +114,10 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         binding.searchEditText.removeTextChangedListener(searchTextWatcher)
+        _binding = null
     }
 
     private fun render(state: SearchState) {
@@ -238,10 +233,8 @@ class SearchActivity : AppCompatActivity() {
         if (clickDebounce()) {
 
             viewModel.addToHistory(track)
-
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            playerIntent.putExtra("track", track)
-            startActivity(playerIntent)
+            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track))
         }
     }
 

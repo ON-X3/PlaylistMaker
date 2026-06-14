@@ -35,4 +35,9 @@
     <string name="new_playlist">Новый плейлист</string>
     <string name="favorite_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+
+    <string name="clear_button_description">Очистить строку поиска</string>
+    <string name="add_to_playlist_button_description">Добавить в плейлист</string>
+    <string name="play_button_description">Воспроизведение и пауза</string>
+    <string name="favorite_button_description">Добавить в избранное</string>
 </resources>

@@ -2,16 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+    tools:context=".settings.ui.fragment.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
-        app:navigationIcon="@drawable/ic_arrow_back_24"
+
         app:title="@string/settings" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -19,7 +19,8 @@
         style="@style/SettingsListStyle"
         android:paddingEnd="15dp"
         android:text="@string/theme"
-        android:textAppearance="@style/SettingsListStyle" />
+        android:textAppearance="@style/SettingsListStyle"
+        tools:ignore="RtlSymmetry" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/shareButton"
