@@ -2,14 +2,17 @@ package com.practicum.playlistmaker.player.ui
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
-class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: MediaPlayer) : ViewModel() {
+class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: MediaPlayer) :
+    ViewModel() {
 
     init {
         preparePlayer()
@@ -17,14 +20,14 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
 
     private val playProgressDefaultValue = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
 
-    private val playerStateLiveData = MutableLiveData<Int>(STATE_DEFAULT)
+    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
     fun observePlayerState(): LiveData<Int> = playerStateLiveData
 
-    private val playProgressLiveData = MutableLiveData<String>(playProgressDefaultValue)
+    private val playProgressLiveData = MutableLiveData(playProgressDefaultValue)
     fun observePlayProgress(): LiveData<String> = playProgressLiveData
 
-    private var handler = Handler(Looper.getMainLooper())
-    private val playProgressRunnable = Runnable { startUpdatingPlayProgress() }
+    var playProgressJob: Job? = null
+
 
     fun onPause() {
         pausePlayer()
@@ -32,7 +35,6 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
 
     override fun onCleared() {
         super.onCleared()
-        handler.removeCallbacks(playProgressRunnable)
         mediaPlayer.release()
     }
 
@@ -44,7 +46,7 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
         }
         mediaPlayer.setOnCompletionListener {
             playerStateLiveData.postValue(STATE_PREPARED)
-            handler.removeCallbacks(playProgressRunnable)
+            playProgressJob?.cancel()
             playProgressLiveData.postValue(playProgressDefaultValue)
         }
     }
@@ -58,7 +60,7 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     private fun pausePlayer() {
         mediaPlayer.pause()
         playerStateLiveData.postValue(STATE_PAUSED)
-        handler.removeCallbacks(playProgressRunnable)
+        playProgressJob?.cancel()
     }
 
     fun playbackControl() {
@@ -69,12 +71,16 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     }
 
     private fun startUpdatingPlayProgress() {
-        playProgressLiveData.postValue(
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(
-                mediaPlayer.currentPosition
-            )
-        )
-        handler.postDelayed(playProgressRunnable, PLAY_PROGRESS_UPDATE_DELAY)
+        playProgressJob = viewModelScope.launch {
+            while (true) {
+                delay(PLAY_PROGRESS_UPDATE_DELAY)
+                playProgressLiveData.postValue(
+                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(
+                        mediaPlayer.currentPosition
+                    )
+                )
+            }
+        }
     }
 
     companion object {
@@ -82,7 +88,6 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2
         const val STATE_PAUSED = 3
-        private const val PLAY_PROGRESS_UPDATE_DELAY = 500L
+        private const val PLAY_PROGRESS_UPDATE_DELAY = 300L
     }
-
 }

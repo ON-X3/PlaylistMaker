@@ -6,12 +6,13 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.dto.Response
 import com.practicum.playlistmaker.search.data.dto.TracksRequest
-import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient(private val service: ITunesApiService, private val context: Context) :
     NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
@@ -21,17 +22,16 @@ class RetrofitNetworkClient(private val service: ITunesApiService, private val c
         return Response().apply { resultCode = 400 }
     }
 
-    private fun requestTracks(dto: TracksRequest): Response {
-        lateinit var body: Response
+    private suspend fun requestTracks(dto: TracksRequest): Response {
 
-        try {
-            val response = (service).search(dto.expression).execute()
-            body = response.body() ?: Response()
-            body.resultCode = response.code()
-        } catch (_: IOException) {
-            body = Response()
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = service.search(dto.expression)
+                response.apply { resultCode = 200 }
+            } catch (_: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
         }
-        return body
     }
 
     private fun isConnected(): Boolean {

@@ -1,9 +1,8 @@
 package com.practicum.playlistmaker.search.ui.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
@@ -21,6 +21,8 @@ import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchState
 import com.practicum.playlistmaker.search.ui.viewmodel.SearchViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -33,7 +35,6 @@ class SearchFragment : Fragment() {
     private lateinit var searchHistoryAdapter: TrackAdapter
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var searchTextWatcher: TextWatcher
-    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +60,7 @@ class SearchFragment : Fragment() {
         binding.tracksList.adapter = adapter
 
         binding.updateButton.setOnClickListener {
-            viewModel.searchTracks(binding.searchEditText.text.toString())
+            viewModel.searchWithoutDebounce(binding.searchEditText.text.toString())
         }
 
         binding.searchEditText.setText(viewModel.getLatestSearchText())
@@ -104,10 +105,13 @@ class SearchFragment : Fragment() {
                 viewModel.showHistory(hasFocus, this.text.toString())
             }
             requestFocus()
-            inputMethodManager?.showSoftInput(binding.searchEditText, InputMethodManager.SHOW_IMPLICIT)
+            inputMethodManager?.showSoftInput(
+                binding.searchEditText,
+                InputMethodManager.SHOW_IMPLICIT
+            )
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    viewModel.searchTracks(this.text.toString())
+                    viewModel.searchWithoutDebounce(this.text.toString())
                 }
                 false
             }
@@ -185,6 +189,7 @@ class SearchFragment : Fragment() {
         binding.tracksList.visibility = View.GONE
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun showListOfTracks(foundTracks: List<TrackUi>) {
         adapter.tracks.clear()
         adapter.tracks.addAll(foundTracks)
@@ -213,6 +218,7 @@ class SearchFragment : Fragment() {
         binding.searchHistoryLayout.visibility = View.GONE
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun showSearchHistory(listOfTracks: List<TrackUi>) {
         searchHistoryAdapter.tracks.clear()
         searchHistoryAdapter.tracks.addAll(listOfTracks)
@@ -224,17 +230,28 @@ class SearchFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+            /*lifecycleScope вместо viewLifecycleOwner.lifecycleScope, рекомендуемого в курсе,
+            использован осознанно, т.к. корутина обращается только к свойству самого фрагмента и
+            не взаимодействует с представлением фрагмента, а использование рекомендованного
+            viewLifecycleOwner.lifecycleScope приводит к тому, что корутина отменяется при
+            навигации на фрагмент плеера, и свойство isClickAllowed остается false, что приводит
+            к невозможности повторного нажатия на какой-либо трек после возвращения от плеера
+            обратно к списку треков*/
+            lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }
 
     private fun onTrackClick(track: TrackUi) {
         if (clickDebounce()) {
-
             viewModel.addToHistory(track)
-            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
-                PlayerFragment.createArgs(track))
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
         }
     }
 

@@ -1,16 +1,17 @@
 package com.practicum.playlistmaker.search.ui.viewmodel
 
 import android.icu.text.SimpleDateFormat
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.models.TrackUi
+import com.practicum.playlistmaker.util.Debouncer
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class SearchViewModel(
@@ -26,37 +27,50 @@ class SearchViewModel(
 
     private var latestSearchText = ""
 
-    private val handler = Handler(Looper.getMainLooper())
     private var latestFoundTacks = mutableListOf<Track>()
 
-    fun searchTracks(searchText: String) {
+    private val searchTrackDebouncer = Debouncer<String>(
+        SEARCH_DEBOUNCE_DELAY,
+        viewModelScope,
+        true
+    ) { text ->
+        searchTracks(text)
+    }
+
+    private fun searchTracks(searchText: String) {
         latestFoundTacks.clear()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+
         if (searchText.isNotEmpty()) {
 
             renderState(SearchState.Loading)
 
-            tracksInteractor.searchTracks(searchText) { foundTracks, message ->
-                val tracks = mutableListOf<Track>()
-                if (foundTracks != null) {
-                    tracks.addAll(foundTracks)
+            viewModelScope.launch {
+                tracksInteractor.searchTracks(searchText).collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
+            }
+        }
+    }
 
-                when {
-                    message != null -> {
-                        renderState(SearchState.Error(R.string.search_error))
-                        showToast.postValue(message)
-                    }
+    private fun processResult(foundTracks: List<Track>?, message: String?) {
+        val tracks = mutableListOf<Track>()
+        if (foundTracks != null) {
+            tracks.addAll(foundTracks)
+        }
 
-                    tracks.isEmpty() -> {
-                        renderState(SearchState.Empty(R.string.search_nothing))
-                    }
+        when {
+            message != null -> {
+                renderState(SearchState.Error(R.string.search_error))
+                showToast.postValue(message)
+            }
 
-                    else -> {
-                        latestFoundTacks.addAll(tracks)
-                        renderState(SearchState.Content(toListOfTrackUi(tracks)))
-                    }
-                }
+            tracks.isEmpty() -> {
+                renderState(SearchState.Empty(R.string.search_nothing))
+            }
+
+            else -> {
+                latestFoundTacks.addAll(tracks)
+                renderState(SearchState.Content(toListOfTrackUi(tracks)))
             }
         }
     }
@@ -68,11 +82,12 @@ class SearchViewModel(
 
         latestSearchText = text
 
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        searchTrackDebouncer.invoke(text)
+    }
 
-        val searchRunnable = Runnable { searchTracks(text) }
-
-        handler.postDelayed(searchRunnable, SEARCH_REQUEST_TOKEN, SEARCH_DEBOUNCE_DELAY)
+    fun searchWithoutDebounce(text: String) {
+        searchTrackDebouncer.cancel()
+        searchTracks(text)
     }
 
     fun showHistory(hasFocus: Boolean, text: String) {
@@ -140,15 +155,9 @@ class SearchViewModel(
         return ms
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 
 }
