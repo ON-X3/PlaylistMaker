@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.player.ui
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -71,15 +72,21 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     }
 
     private fun startUpdatingPlayProgress() {
+        Log.d("TimerDebug", "Start updating timer")
+        playProgressJob?.cancel()
         playProgressJob = viewModelScope.launch {
-            while (true) {
+            //delay(100L)
+            Log.d("TimerDebug", "Before cycle, state = ${playerStateLiveData.value}")
+            while (playerStateLiveData.value == STATE_PLAYING) {
                 delay(PLAY_PROGRESS_UPDATE_DELAY)
                 playProgressLiveData.postValue(
                     SimpleDateFormat("mm:ss", Locale.getDefault()).format(
                         mediaPlayer.currentPosition
                     )
                 )
+                Log.d("TimerDebug", "Value is posted")
             }
+            Log.d("TimerDebug", "After cycle, state = ${playerStateLiveData.value}")
         }
     }
 

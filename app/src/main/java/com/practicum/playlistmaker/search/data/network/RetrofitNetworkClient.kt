@@ -6,8 +6,6 @@ import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.dto.Response
 import com.practicum.playlistmaker.search.data.dto.TracksRequest
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient(private val service: ITunesApiService, private val context: Context) :
     NetworkClient {
@@ -24,13 +22,11 @@ class RetrofitNetworkClient(private val service: ITunesApiService, private val c
 
     private suspend fun requestTracks(dto: TracksRequest): Response {
 
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = service.search(dto.expression)
-                response.apply { resultCode = 200 }
-            } catch (_: Throwable) {
-                Response().apply { resultCode = 500 }
-            }
+        return try {
+            val response = service.search(dto.expression)
+            response.apply { resultCode = 200 }
+        } catch (_: Throwable) {
+            Response().apply { resultCode = 500 }
         }
     }
 
