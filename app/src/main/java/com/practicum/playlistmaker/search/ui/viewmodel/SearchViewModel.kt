@@ -61,7 +61,7 @@ class SearchViewModel(
         when {
             message != null -> {
                 renderState(SearchState.Error(R.string.search_error))
-                showToast.postValue(message)
+                showToast.value = message
             }
 
             tracks.isEmpty() -> {
@@ -95,14 +95,14 @@ class SearchViewModel(
             historyInteractor.loadSearchHistory { listOfLoadedTracks ->
                 if (listOfLoadedTracks.isNotEmpty()) {
                     renderState(SearchState.History(toListOfTrackUi(listOfLoadedTracks)))
-                } else stateLiveData.postValue(SearchState.EmptyScreen)
+                } else stateLiveData.value = SearchState.EmptyScreen
             }
         }
     }
 
     fun clearHistory() {
         historyInteractor.clearSearchHistory()
-        stateLiveData.postValue(SearchState.EmptyScreen)
+        stateLiveData.value = SearchState.EmptyScreen
     }
 
     fun addToHistory(track: TrackUi) {

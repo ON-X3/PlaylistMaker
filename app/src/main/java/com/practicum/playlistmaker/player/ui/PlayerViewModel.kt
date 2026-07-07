@@ -2,7 +2,6 @@ package com.practicum.playlistmaker.player.ui
 
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -43,24 +42,24 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
         mediaPlayer.setDataSource(trackUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.value = STATE_PREPARED
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            playerStateLiveData.value = STATE_PREPARED
             playProgressJob?.cancel()
-            playProgressLiveData.postValue(playProgressDefaultValue)
+            playProgressLiveData.value = playProgressDefaultValue
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerStateLiveData.postValue(STATE_PLAYING)
+        playerStateLiveData.value = STATE_PLAYING
         startUpdatingPlayProgress()
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        playerStateLiveData.postValue(STATE_PAUSED)
+        playerStateLiveData.value = STATE_PAUSED
         playProgressJob?.cancel()
     }
 
@@ -72,21 +71,15 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     }
 
     private fun startUpdatingPlayProgress() {
-        Log.d("TimerDebug", "Start updating timer")
         playProgressJob?.cancel()
         playProgressJob = viewModelScope.launch {
-            //delay(100L)
-            Log.d("TimerDebug", "Before cycle, state = ${playerStateLiveData.value}")
             while (playerStateLiveData.value == STATE_PLAYING) {
                 delay(PLAY_PROGRESS_UPDATE_DELAY)
-                playProgressLiveData.postValue(
+                playProgressLiveData.value =
                     SimpleDateFormat("mm:ss", Locale.getDefault()).format(
                         mediaPlayer.currentPosition
                     )
-                )
-                Log.d("TimerDebug", "Value is posted")
             }
-            Log.d("TimerDebug", "After cycle, state = ${playerStateLiveData.value}")
         }
     }
 
