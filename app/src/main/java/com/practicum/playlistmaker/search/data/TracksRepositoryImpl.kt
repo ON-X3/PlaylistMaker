@@ -7,18 +7,20 @@ import com.practicum.playlistmaker.search.data.dto.TracksResponse
 import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
 
-    override fun searchTracks(expression: String): Resource<List<Track>> {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksRequest(expression))
-        return when (response.resultCode) {
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("No active connection")
+                emit(Resource.Error("No active connection"))
             }
 
-            in 200..299 -> Resource.Success(fromDto((response as TracksResponse).results))
-            else -> Resource.Error("Server error")
+            in 200..299 -> emit(Resource.Success(fromDto((response as TracksResponse).results)))
+            else -> emit(Resource.Error("Server error"))
         }
     }
 

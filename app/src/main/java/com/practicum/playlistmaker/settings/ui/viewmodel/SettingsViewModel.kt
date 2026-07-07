@@ -17,13 +17,13 @@ class SettingsViewModel(
 
     private fun setTheme() {
         settingsInteractor.loadSettings { settings ->
-            darkThemeLiveData.postValue(settings.darkTheme)
+            darkThemeLiveData.value = settings.darkTheme
         }
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
         settingsInteractor.saveSettings(Settings(false, darkThemeEnabled))
-        darkThemeLiveData.postValue(darkThemeEnabled)
+        darkThemeLiveData.value = darkThemeEnabled
     }
 
     fun onShareAppClick() {
