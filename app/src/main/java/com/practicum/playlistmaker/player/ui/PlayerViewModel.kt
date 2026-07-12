@@ -6,12 +6,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.core.common.mapper.toDomain
+import com.practicum.playlistmaker.library.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.search.ui.models.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: MediaPlayer) :
+class PlayerViewModel(
+    private val track: TrackUi,
+    private val mediaPlayer: MediaPlayer,
+    private val favoritesInteractor: FavoritesInteractor
+) :
     ViewModel() {
 
     init {
@@ -26,6 +33,9 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     private val playProgressLiveData = MutableLiveData(playProgressDefaultValue)
     fun observePlayProgress(): LiveData<String> = playProgressLiveData
 
+    private val isFavoriteLiveData = MutableLiveData(track.isFavorite)
+    fun observeIsFavorite(): LiveData<Boolean> = isFavoriteLiveData
+
     var playProgressJob: Job? = null
 
 
@@ -39,7 +49,7 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
     }
 
     private fun preparePlayer() {
-        mediaPlayer.setDataSource(trackUrl)
+        mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             playerStateLiveData.value = STATE_PREPARED
@@ -67,6 +77,16 @@ class PlayerViewModel(private val trackUrl: String, private val mediaPlayer: Med
         when (playerStateLiveData.value) {
             STATE_PLAYING -> pausePlayer()
             STATE_PREPARED, STATE_PAUSED -> startPlayer()
+        }
+    }
+
+    fun onFavoritesClick() {
+        if (isFavoriteLiveData.value == true) {
+            isFavoriteLiveData.value = false
+            viewModelScope.launch { favoritesInteractor.delete(track.toDomain()) }
+        } else {
+            isFavoriteLiveData.value = true
+            viewModelScope.launch { favoritesInteractor.add(track.toDomain() ) }
         }
     }
 

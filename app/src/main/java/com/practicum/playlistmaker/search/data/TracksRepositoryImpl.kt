@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.data
 
 
+import com.practicum.playlistmaker.core.db.AppDatabase
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.data.dto.TracksRequest
 import com.practicum.playlistmaker.search.data.dto.TracksResponse
@@ -8,11 +9,22 @@ import com.practicum.playlistmaker.search.domain.api.TracksRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
+class TracksRepositoryImpl(private val networkClient: NetworkClient, private val db: AppDatabase) : TracksRepository {
 
-    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = combine(doRequest(expression), getFavoritesId()) {resource, favoritesId ->
+        if (resource is Resource.Success) {
+            resource.data!!.forEach {
+                it.isFavorite = it.trackId in favoritesId
+                }
+            resource
+            } else resource
+        }
+
+
+    private fun doRequest(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksRequest(expression))
         when (response.resultCode) {
             -1 -> {
@@ -23,6 +35,8 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
             else -> emit(Resource.Error("Server error"))
         }
     }
+
+    private fun getFavoritesId(): Flow<List<Long>> = db.favoritesDao().getFavoritesId()
 
     private fun fromDto(list: List<TrackDto>): List<Track> {
         return list.map {

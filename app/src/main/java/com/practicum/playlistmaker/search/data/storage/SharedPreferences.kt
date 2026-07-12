@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.data.storage
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.practicum.playlistmaker.search.data.StorageClient
 import java.lang.reflect.Type
@@ -16,7 +15,6 @@ class SharedPreferences<T>(
     private val prefs = context.getSharedPreferences("playlist_maker", Context.MODE_PRIVATE)
 
     override fun getData(): T? {
-        Log.i("Test", "get data from storage")
         val json = prefs.getString(key.name, null)
         if (json == null) {
             return null
@@ -28,7 +26,6 @@ class SharedPreferences<T>(
     override fun saveData(data: T) {
         val json = gson.toJson(data, type)
         prefs.edit().putString(key.name, json).apply()
-
     }
 
     override fun deleteData() {
