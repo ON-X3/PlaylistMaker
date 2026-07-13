@@ -113,8 +113,7 @@ class SearchViewModel(
     }
 
     fun addToHistory(track: TrackUi) {
-        viewModelScope.launch() { historyInteractor.addToSearchHistory(track.toDomain()) }
-
+        viewModelScope.launch { historyInteractor.addToSearchHistory(track.toDomain()) }
     }
 
     fun getLatestSearchText(): String {

@@ -25,16 +25,8 @@ class PlayerViewModel(
         preparePlayer()
     }
 
-    private val playProgressDefaultValue = SimpleDateFormat("mm:ss", Locale.getDefault()).format(0)
-
-    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = playerStateLiveData
-
-    private val playProgressLiveData = MutableLiveData(playProgressDefaultValue)
-    fun observePlayProgress(): LiveData<String> = playProgressLiveData
-
-    private val isFavoriteLiveData = MutableLiveData(track.isFavorite)
-    fun observeIsFavorite(): LiveData<Boolean> = isFavoriteLiveData
+    private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.StateDefault(track.isFavorite))
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
     var playProgressJob: Job? = null
 
@@ -52,62 +44,71 @@ class PlayerViewModel(
         mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.value = STATE_PREPARED
+            playerStateLiveData.value =
+                PlayerState.StatePrepared(playerStateLiveData.value!!.isFavorite)
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.value = STATE_PREPARED
+            playerStateLiveData.value =
+                PlayerState.StatePrepared(playerStateLiveData.value!!.isFavorite)
             playProgressJob?.cancel()
-            playProgressLiveData.value = playProgressDefaultValue
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerStateLiveData.value = STATE_PLAYING
+        playerStateLiveData.value = PlayerState.StatePlaying(
+            playerStateLiveData.value!!.playProgress,
+            playerStateLiveData.value!!.isFavorite
+        )
         startUpdatingPlayProgress()
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        playerStateLiveData.value = STATE_PAUSED
+        playerStateLiveData.value = PlayerState.StatePaused(
+            playerStateLiveData.value!!.playProgress,
+            playerStateLiveData.value!!.isFavorite
+        )
         playProgressJob?.cancel()
     }
 
     fun playbackControl() {
         when (playerStateLiveData.value) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+            is PlayerState.StatePlaying -> pausePlayer()
+            is PlayerState.StatePrepared, is PlayerState.StatePaused -> startPlayer()
+            else -> {}
         }
     }
 
     fun onFavoritesClick() {
-        if (isFavoriteLiveData.value == true) {
-            isFavoriteLiveData.value = false
+        if (playerStateLiveData.value!!.isFavorite == true) {
+            playerStateLiveData.value = playerStateLiveData.value!!.apply { isFavorite = false }
             viewModelScope.launch { favoritesInteractor.delete(track.toDomain()) }
         } else {
-            isFavoriteLiveData.value = true
-            viewModelScope.launch { favoritesInteractor.add(track.toDomain() ) }
+            playerStateLiveData.value = playerStateLiveData.value!!.apply { isFavorite = true }
+            viewModelScope.launch { favoritesInteractor.add(track.toDomain()) }
         }
     }
 
     private fun startUpdatingPlayProgress() {
         playProgressJob?.cancel()
         playProgressJob = viewModelScope.launch {
-            while (playerStateLiveData.value == STATE_PLAYING) {
+            while (playerStateLiveData.value is PlayerState.StatePlaying) {
                 delay(PLAY_PROGRESS_UPDATE_DELAY)
-                playProgressLiveData.value =
+                playerStateLiveData.value = PlayerState.StatePlaying(
                     SimpleDateFormat("mm:ss", Locale.getDefault()).format(
                         mediaPlayer.currentPosition
-                    )
+                    ),
+                    playerStateLiveData.value!!.isFavorite)
             }
         }
     }
 
     companion object {
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
+
+        const val PLAY_PROGRESS_DEFAULT_VALUE = 0
         private const val PLAY_PROGRESS_UPDATE_DELAY = 300L
+
+
     }
 }

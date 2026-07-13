@@ -58,16 +58,11 @@ class PlayerFragment : Fragment() {
         }
 
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-            changeButtonImage(it == PlayerViewModel.STATE_PLAYING)
-            enableButton(it != PlayerViewModel.STATE_DEFAULT)
-        }
+            changeButtonImage(it is PlayerState.StatePlaying)
+            enableButton(it.isPlayButtonAvailable)
+            binding.playProgress.text = it.playProgress
 
-        viewModel.observePlayProgress().observe(viewLifecycleOwner) {
-            binding.playProgress.text = it
-        }
-
-        viewModel.observeIsFavorite().observe(viewLifecycleOwner) {
-            if (it) {
+            if (it.isFavorite) {
                 binding.favoritesButton.setBackgroundResource(R.drawable.button_in_favorites)
             } else {
                 binding.favoritesButton.setBackgroundResource(R.drawable.button_not_in_favorites)
