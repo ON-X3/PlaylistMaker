@@ -1,18 +1,19 @@
 package com.practicum.playlistmaker.search.ui.viewmodel
 
-import android.icu.text.SimpleDateFormat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.core.common.mapper.toDomain
+import com.practicum.playlistmaker.core.common.mapper.toUi
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.util.Debouncer
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
@@ -37,14 +38,17 @@ class SearchViewModel(
         searchTracks(text)
     }
 
+    private var searchJob: Job? = null
+    private var historyJob: Job? = null
+
     private fun searchTracks(searchText: String) {
         latestFoundTacks.clear()
+        searchJob?.cancel()
 
         if (searchText.isNotEmpty()) {
 
             renderState(SearchState.Loading)
-
-            viewModelScope.launch {
+            searchJob = viewModelScope.launch {
                 tracksInteractor.searchTracks(searchText).collect { pair ->
                     processResult(pair.first, pair.second)
                 }
@@ -70,7 +74,7 @@ class SearchViewModel(
 
             else -> {
                 latestFoundTacks.addAll(tracks)
-                renderState(SearchState.Content(toListOfTrackUi(tracks)))
+                renderState(SearchState.Content(tracks.map { it.toUi() }))
             }
         }
     }
@@ -91,11 +95,14 @@ class SearchViewModel(
     }
 
     fun showHistory(hasFocus: Boolean, text: String) {
+        historyJob?.cancel()
         if (text.isEmpty() && hasFocus) {
-            historyInteractor.loadSearchHistory { listOfLoadedTracks ->
-                if (listOfLoadedTracks.isNotEmpty()) {
-                    renderState(SearchState.History(toListOfTrackUi(listOfLoadedTracks)))
-                } else stateLiveData.value = SearchState.EmptyScreen
+            historyJob = viewModelScope.launch {
+                historyInteractor.loadSearchHistory().collect { listOfLoadedTracks ->
+                    if (listOfLoadedTracks.isNotEmpty()) {
+                        renderState(SearchState.History(listOfLoadedTracks.map { it.toUi() }))
+                    } else stateLiveData.value = SearchState.EmptyScreen
+                }
             }
         }
     }
@@ -106,7 +113,7 @@ class SearchViewModel(
     }
 
     fun addToHistory(track: TrackUi) {
-        historyInteractor.addToSearchHistory(fromTrackUi(track))
+        viewModelScope.launch { historyInteractor.addToSearchHistory(track.toDomain()) }
     }
 
     fun getLatestSearchText(): String {
@@ -116,45 +123,6 @@ class SearchViewModel(
     private fun renderState(state: SearchState) {
         stateLiveData.postValue(state)
     }
-
-    private fun toListOfTrackUi(list: List<Track>): List<TrackUi> {
-        return list.map {
-            TrackUi(
-                it.trackId,
-                it.trackName,
-                it.artistName,
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTime),
-                it.artworkUrl100,
-                it.collectionName,
-                it.releaseDate,
-                it.primaryGenreName,
-                it.country,
-                it.previewUrl
-            )
-        }
-    }
-
-    private fun fromTrackUi(track: TrackUi): Track {
-        return Track(
-            track.trackId,
-            track.trackName,
-            track.artistName,
-            stringToMs(track.trackTime),
-            track.artworkUrl100,
-            track.collectionName,
-            track.releaseDate,
-            track.primaryGenreName,
-            track.country,
-            track.previewUrl
-        )
-    }
-
-    private fun stringToMs(string: String): Long {
-        val (min, sec) = string.split(":")
-        val ms = (min.toLong() * 60 + sec.toLong()) * 1000
-        return ms
-    }
-
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L

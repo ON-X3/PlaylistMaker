@@ -230,13 +230,6 @@ class SearchFragment : Fragment() {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            /*lifecycleScope вместо viewLifecycleOwner.lifecycleScope, рекомендуемого в курсе,
-            использован осознанно, т.к. корутина обращается только к свойству самого фрагмента и
-            не взаимодействует с представлением фрагмента, а использование рекомендованного
-            viewLifecycleOwner.lifecycleScope приводит к тому, что корутина отменяется при
-            навигации на фрагмент плеера, и свойство isClickAllowed остается false, что приводит
-            к невозможности повторного нажатия на какой-либо трек после возвращения от плеера
-            обратно к списку треков*/
             lifecycleScope.launch {
                 delay(CLICK_DEBOUNCE_DELAY)
                 isClickAllowed = true

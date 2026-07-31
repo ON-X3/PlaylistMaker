@@ -18,7 +18,7 @@ val searchModule = module {
 
     factory<TracksRepository> {
 
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     factory<TracksInteractor> {
@@ -27,7 +27,7 @@ val searchModule = module {
 
     factory<SearchHistoryRepository> {
         Log.i("TEST", "Search history repository")
-        SearchHistoryRepositoryImpl(get(qualifier = named("historyStorage")))
+        SearchHistoryRepositoryImpl(get(qualifier = named("historyStorage")), get())
     }
 
     factory<SearchHistoryInteractor> {

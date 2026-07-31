@@ -2,6 +2,9 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import android.content.res.Configuration
+import com.practicum.playlistmaker.core.db.di.dbModule
+import com.practicum.playlistmaker.library.di.favoritesModule
+import com.practicum.playlistmaker.library.di.playlistsModule
 import com.practicum.playlistmaker.player.di.playerModule
 import com.practicum.playlistmaker.search.di.networkModule
 import com.practicum.playlistmaker.search.di.searchModule
@@ -20,7 +23,10 @@ class App : Application(), KoinComponent {
 
         startKoin {
             androidContext(this@App)
-            modules(networkModule, storageModule, searchModule, playerModule, settingsModule)
+            modules(
+                networkModule, storageModule, searchModule, playerModule, settingsModule,
+                dbModule, favoritesModule, playlistsModule
+            )
         }
 
         val settingsInteractor: SettingsInteractor = getKoin().get()

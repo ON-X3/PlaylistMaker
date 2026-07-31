@@ -45,7 +45,7 @@ class PlayerFragment : Fragment() {
 
         val track = requireArguments().getParcelable<TrackUi>(ARGS_TRACK)!!
 
-        viewModel = getViewModel { parametersOf(track.previewUrl) }
+        viewModel = getViewModel { parametersOf(track) }
 
 
         binding.playButton.isEnabled = false
@@ -53,13 +53,20 @@ class PlayerFragment : Fragment() {
             viewModel.playbackControl()
         }
 
-        viewModel.observePlayerState().observe(viewLifecycleOwner) {
-            changeButtonImage(it == PlayerViewModel.STATE_PLAYING)
-            enableButton(it != PlayerViewModel.STATE_DEFAULT)
+        binding.favoritesButton.setOnClickListener {
+            viewModel.onFavoritesClick()
         }
 
-        viewModel.observePlayProgress().observe(viewLifecycleOwner) {
-            binding.playProgress.text = it
+        viewModel.observePlayerState().observe(viewLifecycleOwner) {
+            changeButtonImage(it is PlayerState.StatePlaying)
+            enableButton(it.isPlayButtonAvailable)
+            binding.playProgress.text = it.playProgress
+
+            if (it.isFavorite) {
+                binding.favoritesButton.setBackgroundResource(R.drawable.button_in_favorites)
+            } else {
+                binding.favoritesButton.setBackgroundResource(R.drawable.button_not_in_favorites)
+            }
         }
 
         binding.toolbar.setNavigationOnClickListener {
