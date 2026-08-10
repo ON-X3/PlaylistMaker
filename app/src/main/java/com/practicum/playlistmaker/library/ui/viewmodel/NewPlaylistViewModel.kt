@@ -18,7 +18,7 @@ class NewPlaylistViewModel (private val playlistsInteractor: PlaylistsInteractor
     }
 
     fun onNameEdited(name: String) {
-        newPlaylistState.value = newPlaylistState.value?.copy(name = name, isButtonEnabled = name.isNotEmpty())
+        newPlaylistState.value = newPlaylistState.value?.copy(name = name, isButtonEnabled = name.trim().isNotEmpty())
     }
 
     fun onDescriptionEdited(description: String) {
@@ -27,6 +27,6 @@ class NewPlaylistViewModel (private val playlistsInteractor: PlaylistsInteractor
 
     fun createPlaylist() {
             Log.d("PlaylistDB", "in viewModel")
-            playlistsInteractor.addPlaylist(newPlaylistState.value!!.name, newPlaylistState.value!!.description, newPlaylistState.value?.imageUri?.toString())
+            playlistsInteractor.addPlaylist(newPlaylistState.value!!.name.trim(), newPlaylistState.value!!.description.trim(), newPlaylistState.value?.imageUri?.toString())
     }
 }

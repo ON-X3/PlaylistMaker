@@ -1,31 +1,27 @@
 package com.practicum.playlistmaker.core.db.converters
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.core.db.entity.PlaylistEntity
+import com.practicum.playlistmaker.core.db.entity.PlaylistWithTracks
 import com.practicum.playlistmaker.library.domain.models.Playlist
 
-class PlaylistDbConverter(private val gson: Gson) {
+class PlaylistDbConverter() {
 
     fun map(playlist: Playlist): PlaylistEntity {
         return PlaylistEntity(
             playlist.playlistId,
             playlist.playlistName,
             playlist.playlistDescription,
-            playlist.imagePath,
-            gson.toJson(playlist.tracks),
-            playlist.count
+            playlist.imagePath
         )
     }
 
-    fun map(playlist: PlaylistEntity): Playlist {
+    fun map(playlistWithTracks: PlaylistWithTracks): Playlist {
         return Playlist(
-            playlist.playlistId,
-            playlist.playlistName,
-            playlist.playlistDescription,
-            playlist.imagePath,
-            if (playlist.tracks.isNotEmpty()) gson.fromJson(playlist.tracks, object : TypeToken<List<Long>>() {}.type) else emptyList(),
-            playlist.count
+            playlistWithTracks.playlist.playlistId,
+            playlistWithTracks.playlist.playlistName,
+            playlistWithTracks.playlist.playlistDescription,
+            playlistWithTracks.playlist.imagePath,
+            playlistWithTracks.playlistTracks.map {it.trackId}
         )
     }
 }

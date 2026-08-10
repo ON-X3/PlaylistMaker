@@ -101,7 +101,7 @@ class PlayerViewModel(
     }
 
     fun onFavoritesClick() {
-        if (playerStateLiveData.value!!.isFavorite == true) {
+        if (playerStateLiveData.value!!.isFavorite) {
             playerStateLiveData.value = playerStateLiveData.value!!.apply { isFavorite = false }
             viewModelScope.launch { favoritesInteractor.delete(track.toDomain()) }
         } else {
@@ -129,7 +129,7 @@ class PlayerViewModel(
             singleLiveEventTrackAddedToPlaylist.value = Pair(false, playlist.playlistName)
         } else {
             viewModelScope.launch {
-                playlistsInteractor.addTrackToPlaylist(track.toDomain(), playlist)
+                playlistsInteractor.addTrackToPlaylist(track.toDomain(), playlist.playlistId)
             }
             singleLiveEventTrackAddedToPlaylist.value = Pair(true, playlist.playlistName)
         }

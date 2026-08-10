@@ -4,8 +4,10 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.practicum.playlistmaker.core.db.entity.PlaylistEntity
+import com.practicum.playlistmaker.core.db.entity.PlaylistWithTracks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,6 +21,7 @@ interface PlaylistsDao {
     @Update
     suspend fun updatePlaylist(playlist: PlaylistEntity)
 
+    @Transaction
     @Query("SELECT * FROM PLAYLISTS_TABLE")
-    fun getPlaylists(): Flow<List<PlaylistEntity>>
+    fun getPlaylistsWithTracks(): Flow<List<PlaylistWithTracks>>
 }

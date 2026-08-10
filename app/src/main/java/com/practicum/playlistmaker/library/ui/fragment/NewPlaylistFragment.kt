@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.library.ui.fragment
 import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +14,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -33,9 +33,6 @@ class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: NewPlaylistViewModel by viewModel()
-
-    private lateinit var albumNameTextWatcher: TextWatcher
-    private lateinit var albumDescriptionTextWatcher: TextWatcher
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,28 +87,12 @@ class NewPlaylistFragment : Fragment() {
         setupScrollOnTouch(binding.albumName)
         setupScrollOnTouch(binding.albumDescription)
 
-        albumNameTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onNameEdited(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
+        binding.albumName.doOnTextChanged { text, _, _, _ ->
+            viewModel.onNameEdited(text.toString())
         }
-
-        albumDescriptionTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onDescriptionEdited(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
+        binding.albumDescription.doOnTextChanged { text, _, _, _ ->
+            viewModel.onDescriptionEdited(text.toString())
         }
-
-        binding.albumName.addTextChangedListener(albumNameTextWatcher)
-        binding.albumDescription.addTextChangedListener(albumDescriptionTextWatcher)
 
         binding.toolbar.setNavigationOnClickListener {
             onBackClick(dialog)
@@ -135,8 +116,11 @@ class NewPlaylistFragment : Fragment() {
         binding.createPlaylistButton.setOnClickListener {
             Log.d("PlaylistDB", "Button is clicked")
             viewModel.createPlaylist()
-            Toast.makeText(requireContext(), getString(R.string.playlist) + " ${binding.albumName.text} " + getString(R.string.created),
-                Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist) + " ${binding.albumName.text.trim()} " + getString(R.string.created),
+                Toast.LENGTH_LONG
+            ).show()
             findNavController().navigateUp()
         }
 
@@ -149,11 +133,9 @@ class NewPlaylistFragment : Fragment() {
                     .into(binding.album)
             }
 
-            binding.albumNameStrokeText.visibility =
-                if (it.name.isNotEmpty()) View.VISIBLE else View.GONE
+            binding.albumNameStrokeText.isVisible = it.name.isNotEmpty()
 
-            binding.albumDescriptionStrokeText.visibility =
-                if (it.description.isNotEmpty()) View.VISIBLE else View.GONE
+            binding.albumDescriptionStrokeText.isVisible = it.description.isNotEmpty()
 
 
             binding.createPlaylistButton.isEnabled = it.isButtonEnabled
@@ -162,8 +144,6 @@ class NewPlaylistFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.albumName.removeTextChangedListener(albumNameTextWatcher)
-        binding.albumDescription.removeTextChangedListener(albumDescriptionTextWatcher)
         _binding = null
     }
 

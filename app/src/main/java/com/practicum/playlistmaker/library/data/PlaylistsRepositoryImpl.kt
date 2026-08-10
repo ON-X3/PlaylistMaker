@@ -5,24 +5,31 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.util.Log
-import com.practicum.playlistmaker.core.db.AppDatabase
-import com.practicum.playlistmaker.core.db.entity.PlaylistEntity
-import com.practicum.playlistmaker.library.domain.api.PlaylistsRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
 import androidx.core.net.toUri
+import com.practicum.playlistmaker.core.db.AppDatabase
 import com.practicum.playlistmaker.core.db.converters.PlaylistDbConverter
 import com.practicum.playlistmaker.core.db.converters.TrackDbConverter
+import com.practicum.playlistmaker.core.db.entity.PlaylistEntity
+import com.practicum.playlistmaker.core.db.entity.PlaylistTrackInPlaylistEntity
+import com.practicum.playlistmaker.library.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.library.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.FileOutputStream
 
-class PlaylistsRepositoryImpl(private val db: AppDatabase, private val context: Context, private val playlistDbConverter: PlaylistDbConverter, private val appScope: CoroutineScope, private val trackDbConverter: TrackDbConverter) :
+class PlaylistsRepositoryImpl(
+    private val db: AppDatabase,
+    private val context: Context,
+    private val playlistDbConverter: PlaylistDbConverter,
+    private val appScope: CoroutineScope,
+    private val trackDbConverter: TrackDbConverter
+) :
     PlaylistsRepository {
 
     override fun addPlaylist(
@@ -30,7 +37,8 @@ class PlaylistsRepositoryImpl(private val db: AppDatabase, private val context: 
         description: String,
         imageUriString: String?
     ) {
-        appScope.launch { Log.d("PlaylistDB", "In repository")
+        appScope.launch {
+            Log.d("PlaylistDB", "In repository")
             val uri = imageUriString?.toUri()
             val path = withContext(Dispatchers.IO) {
                 if (uri != null) {
@@ -59,26 +67,28 @@ class PlaylistsRepositoryImpl(private val db: AppDatabase, private val context: 
             db.playlistsDao().insertPlaylist(
                 PlaylistEntity(
                     playlistName = name, playlistDescription = description,
-                    imagePath = path,
-                    tracks = "",
-                    count = 0,
+                    imagePath = path
                 )
             )
-            Log.d("PlaylistDB", "after dao") }
-
-    }
-
-    override fun getPlaylists(): Flow<List<Playlist>> = db.playlistsDao().getPlaylists().map {playlists ->
-        playlists.map {
-            playlistDbConverter.map(it)
+            Log.d("PlaylistDB", "after dao")
         }
+
     }
+
+    override fun getPlaylists(): Flow<List<Playlist>> =
+        db.playlistsDao().getPlaylistsWithTracks().map { playlists ->
+            playlists.map {
+                playlistDbConverter.map(it)
+            }
+        }
 
     override suspend fun addTrackToPlaylist(
         track: Track,
-        playlist: Playlist
+        playlistId: Int
     ) {
-        db.tracksInPlaylistsDao().insertTrackInPlaylist(trackDbConverter.mapToTrackInPlaylist(track))
-        db.playlistsDao().updatePlaylist(playlistDbConverter.map(playlist.copy(tracks = playlist.tracks + track.trackId, count = playlist.count + 1)))
+        db.tracksInPlaylistsDao()
+            .insertTrackInPlaylist(trackDbConverter.mapToTrackInPlaylist(track))
+        db.playlistTrackInPlaylistDao()
+            .insertPlaylistTrackInPlaylist(PlaylistTrackInPlaylistEntity(playlistId, track.trackId))
     }
 }
