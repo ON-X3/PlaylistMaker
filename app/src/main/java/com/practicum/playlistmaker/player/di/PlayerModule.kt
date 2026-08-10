@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val playerModule = module {
 
     viewModel { (track: TrackUi) ->
-        PlayerViewModel(track, MediaPlayer(), get())
+        PlayerViewModel(track, MediaPlayer(), get(), get())
     }
 
 }

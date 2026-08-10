@@ -13,4 +13,10 @@
     <style name="MainActivity.Theme" parent="Base.Theme.PlaylistMaker">
         <item name="colorPrimary">@color/blue</item>
     </style>
+
+    <style name="ThemeOverlay.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/yp_black</item>
+        <item name="colorPrimary">@color/yp_blue</item>
+    </style>
 </resources>

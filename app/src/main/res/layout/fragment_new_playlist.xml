@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        tools:context=".library.ui.fragment.NewPlaylistFragment">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/ToolbarStyle"
+            app:navigationIcon="@drawable/ic_arrow_back_24"
+            app:title="@string/new_playlist"
+            tools:ignore="MissingConstraints" />
+
+        <ImageView
+            android:id="@+id/album"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="@dimen/large_padding"
+            android:layout_marginTop="26dp"
+            android:background="@drawable/album_pic_background"
+            android:contentDescription="@null"
+            android:scaleType="centerInside"
+            android:src="@drawable/add_pic_100"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:tint="@null" />
+
+        <EditText
+            android:id="@+id/albumName"
+            style="@style/PlaylistFieldStyle"
+            android:layout_marginTop="32dp"
+            android:hint="@string/album_name"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/album" />
+
+        <TextView
+            android:id="@+id/albumNameStrokeText"
+            style="@style/PlaylistFieldsStrokeTextStyle"
+            android:layout_marginStart="@dimen/basic_padding"
+            android:text="@string/album_name"
+            app:layout_constraintBottom_toTopOf="@id/albumName"
+            app:layout_constraintStart_toStartOf="@id/albumName"
+            app:layout_constraintTop_toTopOf="@id/albumName" />
+
+
+        <EditText
+            android:id="@+id/albumDescription"
+            style="@style/PlaylistFieldStyle"
+            android:layout_marginTop="@dimen/basic_padding"
+            android:hint="@string/album_description"
+            android:importantForAutofill="no"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/albumName" />
+
+        <TextView
+            android:id="@+id/albumDescriptionStrokeText"
+            style="@style/PlaylistFieldsStrokeTextStyle"
+            android:layout_marginStart="@dimen/basic_padding"
+            android:text="@string/album_description"
+            app:layout_constraintBottom_toTopOf="@id/albumDescription"
+            app:layout_constraintStart_toStartOf="@id/albumDescription"
+            app:layout_constraintTop_toTopOf="@id/albumDescription" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/createPlaylistButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="17dp"
+            android:layout_marginTop="@dimen/basic_padding"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="@color/create_playlist_button_color"
+            android:enabled="false"
+            android:fontFamily="@font/ys_display_medium"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0"
+            android:paddingVertical="12.5dp"
+            android:stateListAnimator="@null"
+            android:text="@string/create"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/albumDescription"
+            app:layout_constraintVertical_bias="1" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

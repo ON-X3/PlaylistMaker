@@ -1,7 +1,5 @@
 package com.practicum.playlistmaker.search.ui.fragment
 
-import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +8,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.TrackItemBinding
 import com.practicum.playlistmaker.search.ui.models.TrackUi
+import com.practicum.playlistmaker.util.dpToPx
 
 class TrackViewHolder(private val binding: TrackItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -32,13 +31,7 @@ class TrackViewHolder(private val binding: TrackItemBinding) :
             .into(binding.artwork)
     }
 
-    private fun dpToPx(dp: Float, context: Context): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            context.resources.displayMetrics
-        ).toInt()
-    }
+
 
     companion object {
         fun from(parent: ViewGroup): TrackViewHolder {
