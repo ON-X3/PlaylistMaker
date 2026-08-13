@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.core.db.converters
 
 import com.practicum.playlistmaker.core.db.entity.TrackEntity
+import com.practicum.playlistmaker.core.db.entity.TrackInPlaylistEntity
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class TrackDbConverter {
@@ -21,6 +22,21 @@ class TrackDbConverter {
 
     fun map(track: TrackEntity): Track {
         return Track(
+            track.trackId,
+            track.trackName,
+            track.artistName,
+            track.trackTime,
+            track.artworkUrl100,
+            track.collectionName,
+            track.releaseDate,
+            track.primaryGenreName,
+            track.country,
+            track.previewUrl
+        )
+    }
+
+    fun mapToTrackInPlaylist(track: Track): TrackInPlaylistEntity {
+        return TrackInPlaylistEntity(
             track.trackId,
             track.trackName,
             track.artistName,
