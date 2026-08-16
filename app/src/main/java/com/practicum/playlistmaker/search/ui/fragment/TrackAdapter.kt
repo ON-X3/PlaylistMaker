@@ -4,7 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 
-class TrackAdapter(val clickListener: TrackClickListener) :
+class TrackAdapter(
+    val clickListener: TrackClickListener,
+    val longClickListener: TrackLongClickListener? = null
+) :
     RecyclerView.Adapter<TrackViewHolder>() {
 
     var tracks: MutableList<TrackUi> = mutableListOf()
@@ -15,6 +18,12 @@ class TrackAdapter(val clickListener: TrackClickListener) :
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener { clickListener.onTrackClick(tracks[position]) }
+        if (longClickListener != null) {
+            holder.itemView.setOnLongClickListener {
+                longClickListener.onTrackLongClick(tracks[position])
+                true
+            }
+        }
     }
 
     override fun getItemCount() = tracks.size
@@ -22,5 +31,9 @@ class TrackAdapter(val clickListener: TrackClickListener) :
 
     fun interface TrackClickListener {
         fun onTrackClick(track: TrackUi)
+    }
+
+    fun interface TrackLongClickListener {
+        fun onTrackLongClick(track: TrackUi)
     }
 }

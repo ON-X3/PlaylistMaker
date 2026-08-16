@@ -28,11 +28,11 @@ import com.practicum.playlistmaker.library.ui.viewmodel.NewPlaylistViewModel
 import com.practicum.playlistmaker.util.dpToPx
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
 
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel: NewPlaylistViewModel by viewModel()
+    protected val binding get() = _binding!!
+    open val viewModel: NewPlaylistViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -160,7 +160,7 @@ class NewPlaylistFragment : Fragment() {
         }
     }
 
-    private fun onBackClick(dialog: MaterialAlertDialogBuilder) {
+    open fun onBackClick(dialog: MaterialAlertDialogBuilder) {
         if (binding.album.getTag(R.id.tag_uri) != null || !binding.albumName.text.isNullOrEmpty() || !binding.albumDescription.text.isNullOrEmpty()) {
             dialog.show()
         } else {

@@ -48,12 +48,12 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = TrackAdapter { track ->
+        adapter = TrackAdapter({ track ->
             onTrackClick(track)
-        }
-        searchHistoryAdapter = TrackAdapter { track ->
+        })
+        searchHistoryAdapter = TrackAdapter({ track ->
             onTrackClick(track)
-        }
+        })
 
         binding.searchHistoryList.adapter = searchHistoryAdapter
 

@@ -59,7 +59,7 @@ class PlayerFragment : Fragment() {
 
         behavior = BottomSheetBehavior.from(binding.bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        behavior.peekHeight = (resources.displayMetrics.heightPixels*0.6).toInt()
+        behavior.peekHeight = (resources.displayMetrics.heightPixels*0.5).toInt()
 
         bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, state: Int) {

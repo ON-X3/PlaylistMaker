@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.library.ui.state.PlaylistsState
 import kotlinx.coroutines.launch
 
 class PlaylistsViewModel (private val playlistsInteractor: PlaylistsInteractor): ViewModel() {
