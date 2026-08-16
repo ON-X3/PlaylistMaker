@@ -10,7 +10,8 @@ import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.library.domain.models.Playlist
-import com.practicum.playlistmaker.library.ui.viewmodel.PlaylistsState
+import com.practicum.playlistmaker.library.ui.adapter.PlaylistAdapter
+import com.practicum.playlistmaker.library.ui.state.PlaylistsState
 import com.practicum.playlistmaker.library.ui.viewmodel.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,7 +37,12 @@ class PlaylistsFragment : Fragment() {
             findNavController().navigate(R.id.action_libraryFragment_to_newPlaylistFragment)
         }
 
-        binding.playlistsList.adapter = PlaylistAdapter()
+        binding.playlistsList.adapter = PlaylistAdapter { playlist ->
+            findNavController().navigate(
+                R.id.action_libraryFragment_to_playlistFragment,
+                PlaylistFragment.createArgs(playlist.playlistId)
+            )
+        }
 
         viewModel.observeState().observe(viewLifecycleOwner) {
             when (it) {

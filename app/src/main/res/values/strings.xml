@@ -6,7 +6,7 @@
     <string name="settings">Настройки</string>
 
     <string name="theme">Темная тема</string>
-    <string name="share">Поделиться приложением</string>
+    <string name="share_app">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
     <string name="agreement">Пользовательское соглашние</string>
 
@@ -54,6 +54,20 @@
     <string name="successfully_added_to_playlist">Добавлено в плейлист</string>
     <string name="already_added_to_playlist">Трек уже добавлен в плейлист</string>
 
+    <string name="no_tracks_in_playlist">В этом плейлисте пока\nнет треков</string>
+    <string name="delete_track_from_playlist_dialog_title">Хотите удалить трек?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="share_empty_playlist_toast">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="delete_playlist_dialog_text">Вы уверены, что хотите удалить этот плейлист?</string>
+    <string name="edit">Редактировать</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="more_button_description">Больше действий</string>
+
     <plurals name="tracks">
         <item quantity="zero">%d треков</item>
         <item quantity="one">%d трек</item>
@@ -61,6 +75,15 @@
         <item quantity="few">%d трека</item>
         <item quantity="many">%d треков</item>
         <item quantity="other">%d трека</item>
+    </plurals>
+
+    <plurals name="minutes">
+        <item quantity="zero">%d минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="two">%d минуты</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минуты</item>
     </plurals>
 
 </resources>

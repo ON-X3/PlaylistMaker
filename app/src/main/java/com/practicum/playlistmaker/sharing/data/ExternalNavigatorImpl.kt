@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.sharing.data
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.models.EmailData
@@ -18,7 +18,7 @@ class ExternalNavigatorImpl(val context: Context) : ExternalNavigator {
 
     override fun openLink(termsLink: String) {
         val termsIntent =
-            Intent(Intent.ACTION_VIEW, Uri.parse(termsLink))
+            Intent(Intent.ACTION_VIEW, termsLink.toUri())
         termsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(termsIntent)
     }
@@ -26,11 +26,21 @@ class ExternalNavigatorImpl(val context: Context) : ExternalNavigator {
     override fun openEmail(supportEmailData: EmailData) {
         val supportIntent = Intent(Intent.ACTION_SENDTO)
         supportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        supportIntent.data = Uri.parse("mailto:")
+        supportIntent.data = "mailto:".toUri()
         supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(supportEmailData.email))
         supportIntent.putExtra(Intent.EXTRA_SUBJECT, supportEmailData.subject)
         supportIntent.putExtra(Intent.EXTRA_TEXT, supportEmailData.text)
         context.startActivity(supportIntent)
+    }
+
+    override fun sharePlaylist(playlistInfo: String) {
+        val sharePlaylistIntent = Intent(Intent.ACTION_SEND)
+        sharePlaylistIntent.apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setType("text/plain")
+            putExtra(Intent.EXTRA_TEXT, playlistInfo)
+        }
+        context.startActivity(sharePlaylistIntent)
     }
 
     override fun getShareAppLink(): String {

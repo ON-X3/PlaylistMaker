@@ -23,5 +23,6 @@ import androidx.room.ForeignKey
 )
 data class PlaylistTrackInPlaylistEntity(
     val playlistId: Int,
-    val trackId: Long
+    val trackId: Long,
+    val createdAt: Long = System.currentTimeMillis()
 )

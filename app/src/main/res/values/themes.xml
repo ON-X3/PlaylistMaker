@@ -18,5 +18,6 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/yp_black</item>
         <item name="colorPrimary">@color/yp_blue</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/DialogMessageTextStyle</item>
     </style>
 </resources>

@@ -6,10 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.library.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.library.ui.state.NewPlaylistState
 
-class NewPlaylistViewModel (private val playlistsInteractor: PlaylistsInteractor): ViewModel() {
+open class NewPlaylistViewModel (protected val playlistsInteractor: PlaylistsInteractor): ViewModel() {
 
-    private val newPlaylistState = MutableLiveData(NewPlaylistState())
+    protected val newPlaylistState = MutableLiveData(NewPlaylistState())
     fun observeNewPlaylistState(): LiveData<NewPlaylistState> = newPlaylistState
 
 
@@ -18,7 +19,7 @@ class NewPlaylistViewModel (private val playlistsInteractor: PlaylistsInteractor
     }
 
     fun onNameEdited(name: String) {
-        newPlaylistState.value = newPlaylistState.value?.copy(name = name, isButtonEnabled = name.trim().isNotEmpty())
+        newPlaylistState.value = newPlaylistState.value?.copy(name = name, isButtonEnabled = name.isNotBlank())
     }
 
     fun onDescriptionEdited(description: String) {

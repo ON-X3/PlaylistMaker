@@ -9,22 +9,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentFavoriteTracksBinding
+import com.practicum.playlistmaker.library.ui.state.FavoritesState
 import com.practicum.playlistmaker.library.ui.viewmodel.FavoriteTracksViewModel
-import com.practicum.playlistmaker.library.ui.viewmodel.FavoritesState
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.fragment.TrackAdapter
 import com.practicum.playlistmaker.search.ui.models.TrackUi
 import com.practicum.playlistmaker.util.Debouncer
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoriteTracksFragment: Fragment() {
+class FavoriteTracksFragment : Fragment() {
 
 
     private var _binding: FragmentFavoriteTracksBinding? = null
     private val binding get() = _binding!!
     private val viewModel: FavoriteTracksViewModel by viewModel()
     private var isClickAllowed = true
-    private val clickDebouncer = Debouncer<Any>(CLICK_DEBOUNCE_DELAY, lifecycleScope, false) {_ ->
+    private val clickDebouncer = Debouncer<Any>(CLICK_DEBOUNCE_DELAY, lifecycleScope, false) { _ ->
         isClickAllowed = true
     }
     private lateinit var adapter: TrackAdapter
@@ -40,7 +40,7 @@ class FavoriteTracksFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = TrackAdapter {track -> onTrackClick(track)}
+        adapter = TrackAdapter({ track -> onTrackClick(track) })
         binding.favoritesList.adapter = adapter
 
         viewModel.observeState().observe(viewLifecycleOwner) {
@@ -61,8 +61,10 @@ class FavoriteTracksFragment: Fragment() {
         if (isClickAllowed) {
             isClickAllowed = false
             clickDebouncer.invoke(Any())
-            findNavController().navigate(R.id.action_libraryFragment_to_playerFragment,
-                PlayerFragment.createArgs(track))
+            findNavController().navigate(
+                R.id.action_libraryFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
         }
     }
 

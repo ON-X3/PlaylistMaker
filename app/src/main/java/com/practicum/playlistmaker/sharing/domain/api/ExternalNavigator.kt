@@ -7,6 +7,8 @@ interface ExternalNavigator {
     fun openLink(termsLink: String)
     fun openEmail(supportEmailData: EmailData)
 
+    fun sharePlaylist(playlistInfo: String)
+
     fun getShareAppLink(): String
     fun getSupportEmailData(): EmailData
     fun getTermsLink(): String

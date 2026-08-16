@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker.library.ui.fragment
+package com.practicum.playlistmaker.library.ui.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.library.domain.models.Playlist
 
-class PlaylistAdapter : RecyclerView.Adapter<PlaylistViewHolder>() {
+class PlaylistAdapter (private val clickListener: PlaylistClickListener) : RecyclerView.Adapter<PlaylistViewHolder>() {
 
     var playlists: MutableList<Playlist> = mutableListOf()
 
@@ -19,11 +19,16 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistViewHolder>() {
         position: Int
     ) {
         holder.bind(playlists[position])
+        holder.itemView.setOnClickListener {
+            clickListener.onPlaylistClick(playlists[position])
+        }
     }
 
     override fun getItemCount(): Int {
         return playlists.size
     }
 
-
+    fun interface PlaylistClickListener {
+        fun onPlaylistClick(playlist: Playlist)
+    }
 }
